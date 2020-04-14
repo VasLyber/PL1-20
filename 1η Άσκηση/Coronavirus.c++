@@ -1,11 +1,14 @@
 #include<stdio.h>
-
-// https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
-//https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
-// A C++ Program to detect cycle in a graph
+#include<iostream>
 #include<bits/stdc++.h>
-
 using namespace std;
+
+// ΠΗΓΕΣ  
+// https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
+// https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+// https://www.sanfoundry.com/cpp-program-check-undirected-graph-connected-bfs/
+
+// A C++ Program to detect cycle in a graph
 
 class Graph
 {
@@ -18,6 +21,9 @@ public:
     void addEdge(int v, int w);   // to add an edge to graph
     bool isCyclic();    // returns true if there is a cycle in this graph
     void DFS(int v);
+    void BFS(int s, bool visited[]);
+    bool isConnected();
+    Graph getTranspose();
 };
 
 Graph::Graph(int V)
@@ -107,17 +113,78 @@ void Graph::DFS(int v)
     DFSUtil(v, visited);
 }
 
+void Graph::BFS(int s, bool visited[])
+{
+    list<int> q;
+    list<int>::iterator i;
+    visited[s] = true;
+    q.push_back(s);
+    while (!q.empty())
+    {
+        s = q.front();
+        q.pop_front();
+        for(i = adj[s].begin(); i != adj[s].end(); ++i)
+        {
+            if(!visited[*i])
+            {
+                visited[*i] = true;
+                q.push_back(*i);
+            }
+        }
+    }
+}
+
+Graph Graph::getTranspose()
+{
+    Graph g(V);
+    for (int v = 0; v < V; v++)
+    {
+        list<int>::iterator i;
+        for(i = adj[v].begin(); i != adj[v].end(); ++i)
+        {
+            g.adj[*i].push_back(v);
+        }
+    }
+    return g;
+}
+
+bool Graph::isConnected()
+{
+    bool visited[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
+    BFS(0, visited);
+    for (int i = 0; i < V; i++)
+        if (visited[i] == false)
+            return false;
+    Graph gr = getTranspose();
+    for(int i = 0; i < V; i++)
+        visited[i] = false;
+    gr.BFS(0, visited);
+    for (int i = 0; i < V; i++)
+        if (visited[i] == false)
+            return false;
+    return true;
+}
 
 int main(){
 
   int T,N,M,K,L;
-  cin << T;
+  cin >> T;
   for (int i=0; i<T; i++){
-    cin << N << M;
+    cin >> N;
+    cin >> M;
     Graph g(N);
-    for (int i=0; i<M; i++){
-      cin << K << L
-      g.addEdge(K, L);
+    for (int j=0; j<M; j++){
+      cin >> K >> L;
+      g.addEdge(K-1, L-1);
+      g.addEdge(L-1, K-1);
     }
+
+    if(g.isCyclic() && g.isConnected())
+        printf("Graph %d possibly CORONA ",i);
+    else
+        printf("Graph %d NO CORONA ",i);
   }
+  return 0;
 }

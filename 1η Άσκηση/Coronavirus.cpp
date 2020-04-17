@@ -2,6 +2,7 @@
 #include<iostream>
 #include<bits/stdc++.h>
 #include<list>
+#include<fstream>
 using namespace std;
 
 // ΠΗΓΕΣ
@@ -206,14 +207,16 @@ return true;
 
 int main(){
 
+ifstream myReadFile;
+myReadFile.open("test.txt");
 int T,N,M,K,L,temp;
-cin >> T;
+myReadFile >> T;
 for (int i=0; i<T; i++){
-cin >> N;
-cin >> M;
+myReadFile >> N;
+myReadFile >> M;
 Graph g(N);
 for (int j=0; j<M; j++){
-  cin >> K >> L;
+  myReadFile >> K >> L;
   g.addEdge(K-1, L-1);
   g.addEdge(L-1, K-1);
 }
@@ -233,5 +236,7 @@ if(g.isCyclic(temp) && g.isConnected()){
 else
     printf("Graph %d NO CORONA ",i);
 }
+
+myReadFile.close();
 return 0;
 }

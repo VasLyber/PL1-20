@@ -10,15 +10,16 @@ using namespace std;
 // https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
 // https://www.sanfoundry.com/cpp-program-check-undirected-graph-connected-bfs/
 
-// A C++ Program to detect cycle in a graphvector
-
 class Graph
 {
 int V;    // No. of vertices
 bool isCyclicUtil(int v, bool visited[], int parent);
 bool isCyclicUtil1(int v, bool visited[], int parent,list<int>& lis);
-void DFSUtil(int v, bool visited[]);
+
 public:
+int q =0;
+list<int> mylist;
+list<int>::iterator it;
 list<int> *adj;    // Pointer to an array containing adjacency lists
 Graph(int V);   // Constructor
 void addEdge(int v, int w);   // to add an edge to graph
@@ -29,10 +30,42 @@ void BFS(int s, bool visited[]);
 bool isConnected();
 Graph getTranspose();
 void printGraph() ;
-//void size(list<int>& it,int& w);
+void connectedComponents();
+void DFSUtil(int v, bool visited[]);
 
 };
+void Graph::connectedComponents()
+{
+    // Mark all the vertices as not visited
+    bool *visited = new bool[V];
+    for(int v = 0; v < V; v++)
+        visited[v] = false;
 
+    for (int v=0; v<V; v++)
+    {
+        if (visited[v] == false)
+        {
+            DFSUtil(v, visited);
+            mylist.push_back(q);
+            q=0;
+        }
+    }
+    delete[] visited;
+}
+
+void Graph::DFSUtil(int v, bool visited[])
+{
+    // Mark the current node as visited and print it
+    visited[v] = true;
+    q++;
+
+    // Recur for all the vertices
+    // adjacent to this vertex
+    list<int>::iterator i;
+    for(i = adj[v].begin(); i != adj[v].end(); ++i)
+        if(!visited[*i])
+            DFSUtil(*i, visited);
+}
 
 void Graph:: printGraph()
 {
@@ -64,20 +97,20 @@ std::list<int>::iterator it1,it2;
 
 it1 = adj[v].begin();
 for (int i : adj[v]){
-if (i == w) {
-    adj[v].erase(it1);
-    break;
-}
-it1++;
+  if (i == w) {
+      adj[v].erase(it1);
+      break;
+    }
+  it1++;
 }
 
 it2 = adj[w].begin();
 for (int i : adj[w]){
-if (i == v) {
-    adj[w].erase(it2);
-    break;
-}
-it2++;
+  if (i == v) {
+      adj[w].erase(it2);
+      break;
+    }
+  it2++;
 }
 }
 // A recursive function that uses visited[] and parent to detect
@@ -110,7 +143,7 @@ bool Graph::isCyclicUtil1(int v, bool visited[], int parent,list<int>& lis)
   return false;
 }
 
-// Returns true if the graph contains a cycle, else false.
+// Παραλλαγή για να κρατάμε τι έχει επισκεφτεί
 bool Graph::isCyclic1(int &d,list<int>& lis)
 {
   // Mark all the vertices as not visited and not part of recursion
@@ -228,14 +261,48 @@ for (int i = 0; i < V; i++)
 return true;
 }
 
-/*void Graph::size(list<int>& it,int& w)
+// QuickSort
+
+void swap(int* a, int* b)
 {
-    if (*it == NULL)
-        w++;
-    else
-      for (auto x : adj[*it])
-        size(x) + w;
-}*/
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int partition (int arr[], int low, int high)
+{
+    int pivot = arr[high];    // pivot
+    int i = (low - 1);  // Index of smaller element
+
+    for (int j = low; j <= high- 1; j++)
+    {
+        // If current element is smaller than or
+        // equal to pivot
+        if (arr[j] <= pivot)
+        {
+            i++;    // increment index of smaller element
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+
+void quickSort(int arr[], int low, int high)
+{
+    if (low < high)
+    {
+        /* pi is partitioning index, arr[p] is now
+           at right place */
+        int pi = partition(arr, low, high);
+
+        // Separately sort elements before
+        // partition and after partition
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
 
 int main(int argc, char* argv[]){
 
@@ -243,42 +310,48 @@ ifstream myReadFile;
 myReadFile.open(argv[1]);
 int T,N,M,K,L,temp;
 int p=0;
-int w=0;
 list<int> lista;
 myReadFile >> T;
 for (int i=0; i<T; i++){
-myReadFile >> N >> M;
-Graph g(N);
-for (int j=0; j<M; j++){
-myReadFile >> K >> L;
-g.addEdge(K-1, L-1);
-g.addEdge(L-1, K-1);
-}
-if(g.isCyclic(temp) && g.isConnected()){
-
-//  g.printGraph();
-  g.isCyclic1(temp,lista);
-  for (auto v : lista){
-    for(auto u : lista){
-     g.delEdge(u,v);
-   }
-   p++;
+  myReadFile >> N >> M;
+  Graph g(N);
+  for (int j=0; j<M; j++){
+    myReadFile >> K >> L;
+    g.addEdge(K-1, L-1);
+    g.addEdge(L-1, K-1);
   }
- //g.printGraph();
-  if(g.isCyclic(temp))
-    printf("NO CORONA\n");
-  else{
-    printf("CORONA %d\n",p);
-    /*for (std::list<int>::iterator it=lista.begin(); it != lista.end(); ++it){
+  if(g.isCyclic(temp) && g.isConnected()){
 
-      printf("\n");
-    }*/
-  }
-}
-else
-  printf("NO CORONA\n");
-}
+    //  g.printGraph();
+    g.isCyclic1(temp,lista);
+    for (auto v : lista){
+      for(auto u : lista){
+        g.delEdge(u,v);
+      }
+      p++;
+    }
 
-myReadFile.close();
-return 0;
+    //g.printGraph();
+    if(g.isCyclic(temp))
+      printf("NO CORONA\n");
+      else{
+        printf("CORONA %d\n",p);
+        g.connectedComponents();
+        int arr[g.mylist.size()];
+        int k = 0;
+  	     for (int const &j: g.mylist) {
+  		       arr[k++] = j;
+  	        }
+            quickSort(arr,0,p-1);
+            for (int j=0; j < p-1; j++)
+              printf("%d ", arr[j]);
+            printf("%d\n",arr[p-1]);
+          }
+        }
+        else
+        printf("NO CORONA\n");
+      }
+
+      myReadFile.close();
+      return 0;
 }

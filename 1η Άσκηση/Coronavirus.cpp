@@ -6,7 +6,7 @@ using namespace std;
 
 // ΠΗΓΕΣ
 // https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
-// https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+// https://www.geeksforgeeks.org/detect-cycle-undirected-graph/
 // https://www.sanfoundry.com/cpp-program-check-undirected-graph-connected-bfs/
 
 // A C++ Program to detect cycle in a graphvector
@@ -15,19 +15,32 @@ class Graph
 {
 int V;    // No. of vertices
 list<int> *adj;    // Pointer to an array containing adjacency lists
-bool isCyclicUtil(int v, bool visited[], bool *rs);  // used by isCyclic()
+bool isCyclicUtil(int v, bool visited[], int parent);
 void DFSUtil(int v, bool visited[]);
 public:
 Graph(int V);   // Constructor
 void addEdge(int v, int w);   // to add an edge to graph
 void delEdge(int v, int w); // to remove an edge from graph
-bool isCyclic();    // returns true if there is a cycle in this graph
+bool isCyclic(int &d);   // returns true if there is a cycle
 void DFS(int v);
 void BFS(int s, bool visited[]);
 bool isConnected();
 Graph getTranspose();
+void printGraph() ;
 };
 
+
+void Graph:: printGraph()
+{
+    for (int v = 0; v < V; ++v)
+    {
+        cout << "\n Adjacency list of vertex "
+             << v << "\n head ";
+        for (auto x : adj[v])
+           cout << "-> " << x;
+        printf("\n");
+    }
+}
 Graph::Graph(int V)
 {
 this->V = V;
@@ -36,15 +49,14 @@ adj = new list<int>[V];
 
 void Graph::addEdge(int v, int w)
 {
-adj[v].push_back(w); // Add w to v’s list.
+adj[v].push_back(w);
 }
 
 void Graph::delEdge(int v, int w)
 {
 
 std::list<int>::iterator it1,it2;
-// Traversing through the first vector list
-// and removing the second element from it
+
 it1 = adj[v].begin();
 for (int i : adj[v]){
   if (i == w) {
@@ -53,9 +65,6 @@ for (int i : adj[v]){
   }
   it1++;
 }
-
-// Traversing through the second vector list
-// and removing the first element from it
 
 it2 = adj[w].begin();
 for (int i : adj[w]){
@@ -66,51 +75,50 @@ for (int i : adj[w]){
   it2++;
 }
 }
-// This function is a variation of DFSUtil() in https://www.geeksforgeeks.org/archives/18212
-bool Graph::isCyclicUtil(int v, bool visited[], bool *recStack)
+// A recursive function that uses visited[] and parent to detect
+// cycle in subgraph reachable from vertex v.
+bool Graph::isCyclicUtil(int v, bool visited[], int parent)
 {
-if(visited[v] == false)
-{
-    // Mark the current node as visited and part of recursion stack
+    // Mark the current node as visited
     visited[v] = true;
-    recStack[v] = true;
 
     // Recur for all the vertices adjacent to this vertex
     list<int>::iterator i;
-    for(i = adj[v].begin(); i != adj[v].end(); ++i)
+    for (i = adj[v].begin(); i != adj[v].end(); ++i)
     {
-        if ( !visited[*i] && isCyclicUtil(*i, visited, recStack) )
-            return true;
-        else if (recStack[*i])
-            return true;
-    }
+        // If an adjacent is not visited, then recur for that adjacent
+        if (!visited[*i])
+        {
+           if (isCyclicUtil(*i, visited, v))
+              return true;
+        }
 
-}
-recStack[v] = false;  // remove the vertex from recursion stack
-return false;
+        // If an adjacent is visited and not parent of current vertex,
+        // then there is a cycle.
+        else if (*i != parent)
+           return true;
+    }
+    return false;
 }
 
 // Returns true if the graph contains a cycle, else false.
-// This function is a variation of DFS() in https://www.geeksforgeeks.org/archives/18212
-bool Graph::isCyclic()
+bool Graph::isCyclic(int &d)
 {
-// Mark all the vertices as not visited and not part of recursion
-// stack
-bool *visited = new bool[V];
-bool *recStack = new bool[V];
-for(int i = 0; i < V; i++)
-{
-    visited[i] = false;
-    recStack[i] = false;
-}
+    // Mark all the vertices as not visited and not part of recursion
+    // stack
+    bool *visited = new bool[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
 
-// Call the recursive helper function to detect cycle in different
-// DFS trees
-for(int i = 0; i < V; i++)
-    if (isCyclicUtil(i, visited, recStack))
-        return i;
-
-return false;
+    // Call the recursive helper function to detect cycle in different
+    // DFS trees
+    for (int u = 0; u < V; u++)
+        if (!visited[u]) // Don't recur for u if it is already visited
+          if (isCyclicUtil(u, visited, -1)){
+            d = u;
+            return true;
+          }
+    return false;
 }
 
 void Graph::DFSUtil(int v, bool visited[])
@@ -209,12 +217,19 @@ for (int j=0; j<M; j++){
   g.addEdge(K-1, L-1);
   g.addEdge(L-1, K-1);
 }
+if(g.isCyclic(temp) && g.isConnected()){
 
-if(temp = g.isCyclic() && g.isConnected())
-    for (int j=0; j<N; j++){
-      g.delEdge(i,j);
+  //  g.printGraph();
+    for(int j = 0; j < N; ++j){
+      g.delEdge(temp,j);
     }
-  printf("hello");
+//    g.printGraph();
+    if(g.isCyclic(temp))
+      printf("Graph %d NO CORONA ",i);
+    else{
+      printf("Graph %d CORONA ",i);
+    }
+}
 else
     printf("Graph %d NO CORONA ",i);
 }

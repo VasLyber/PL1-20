@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
 
   ifstream myReadFile;
   int T,N,K,n,a;
+  int t=0;
   myReadFile.open(argv[1]);
   myReadFile >> T;
   int binarylist[32];
@@ -44,9 +45,20 @@ int main(int argc, char* argv[]){
           }
         }
       }
-      for(int i=0;i<=a-1;i++)
-       cout << binarylist[i];
+      cout << "[";
+      for (int u=a-1;u>=0;u--){
+        if(binarylist[u]>0){
+          break;
+        }
+        t++;
+      }
+      a = a - t;
+      for(int i=0;i<=a-2;i++)
+       cout << binarylist[i]<<",";
+      cout << binarylist[a-1];
+      cout <<"]";
       cout << "\n";
+      t=0;
    }
     else{
       cout << "[]\n";

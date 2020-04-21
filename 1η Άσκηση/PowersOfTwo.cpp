@@ -2,9 +2,9 @@
 #include<stdio.h>
 #include<fstream>
 using namespace std;
-
+#define MAX 1000000
 // function to convert decimal to binary
-void decToBinary(int n, int (&binaryNum)[32], int& k, int& l)
+void decToBinary(int n, int (&binaryNum)[MAX], int& k, int& l)
 {
     // counter for binary array
     int i = 0;
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
   int t=0;
   myReadFile.open(argv[1]);
   myReadFile >> T;
-  int binarylist[32];
+  int binarylist[MAX];
 
   for (int i=0; i<T; i++){
     myReadFile >> N >> K;

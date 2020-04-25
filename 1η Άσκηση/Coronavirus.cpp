@@ -196,20 +196,20 @@ bool Graph::isCyclic()
 
 void Graph::BFS(long long int s, bool visited[])
 {
-list<long long int> q;
+list<long long int> w;
 list<long long int>::iterator i;
 visited[s] = true;
-q.push_back(s);
-  while (!q.empty())
+w.push_back(s);
+  while (!w.empty())
   {
-    s = q.front();
-    q.pop_front();
+    s = w.front();
+    w.pop_front();
     for(i = adj[s].begin(); i != adj[s].end(); ++i)
     {
         if(!visited[*i])
         {
             visited[*i] = true;
-            q.push_back(*i);
+            w.push_back(*i);
           }
     }
   }

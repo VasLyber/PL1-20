@@ -29,6 +29,7 @@ local
 
 	fun printList xs = print(String.concatWith ", " (map Int.toString xs));
 
+	fun sin2 n = n + 2
 in
 	fun powers2 filename =
 		let
@@ -50,7 +51,7 @@ in
 				in
 							dc2b (nu,leng)
 				end
-		fun take2 nu leng =
+		fun take2all nu leng =
 			let
 				fun tk2 (n,len) =
 							let
@@ -66,12 +67,10 @@ in
 								tk2 (nu,leng)
 					end
 
-   	fun final num le =
+   	fun final num len1  =
 			let
-				val AllBin = dec2binall 1 le
-				val t = List.nth(AllBin,1)
-				val re = List.length t
-				val rep = plin re
+				val AllBin = dec2binall 1 len
+				val AllNum = take2all 1 len
 				fun count e i j =
 				   if i > j then 0
 				   else
@@ -80,11 +79,53 @@ in
 					  in
 					   if (List.nth(e,i)=1) then 1 + cnt else cnt
 					  end;
+				fun fin n len2 =
+					let
+						 val x = plin n
+						 val g = List.nth(AllBin,x)
+						 val go = Array.fromList(g)
+						 val i = List.nth(AllNum,x)
+						 val length2 = List.length g
+						 val length22 = plin length2
+						 val ass = count g 0 length22
+						 fun condition num2 =
+						 		let
+									fun indexfinder num5 =
+										let
+											val num55 = plin num5
+											val tr = Array.sub(go,num55)
+										in
+											if(tr>0)then num55
+											else indexfinder(sin(num55))
+										end
+									fun updatelist num3  =
+										let
+											val we = indexfinder 1
+											val we1 = plin we
+											val numar = Array.sub(go,we)
+											val numarr = Array.sub(go,we1)
+											val numar1 = plin numar
+											val numarr1 = sin2 numarr
+										in
+										  Array.update(go,we,numar1);
+											Array.update(go,we,numarr1);
+											sin ass;
+											go
+										end
+								in
+						 			if(ass<i) then updatelist num2
+									else go
+								end
+					 fun ifelse num1=
+		 				if (num1 >=len2) then condition(num1) else (fin (sin num1); condition (sin(num1)))
+					in
+						ifelse n
+					end
 			in
-			 count t 0 rep
- 		  end
+			 fin 1 len1
+ 		  end;
+	 in
+		  final 1 len
+	 end;
 
-	in
-		  take2 1 len
-	end
-end
+end;

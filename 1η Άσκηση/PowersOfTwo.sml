@@ -1,22 +1,21 @@
 local
 	fun parse file =
 		let
-				fun next_int input =
-				Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
+				fun next_int input = Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
 				val stream = TextIO.openIn file
 				val n = next_int stream
 				val _ = TextIO.inputLine stream
 				fun scanner 0 acc n = (TextIO.closeIn stream; acc)
 					| scanner i acc n =
-						let
-								val d = next_int stream
-								val v = next_int stream
-								in
-								scanner (i - 1) ((d,v) :: acc) n
-								end
-								in
-								rev(scanner n [] n)
-								end
+					let
+						val d = next_int stream
+						val v = next_int stream
+					in
+						scanner (i - 1) ((d,v) :: acc) n
+					end
+		in
+			rev(scanner n [] n)
+		end
 
 	fun plin lk = lk - 1
 
@@ -27,6 +26,8 @@ local
 			then [x]
 		else
 			dec2bin (x div 2) @ [(x mod 2)];
+
+	fun printList xs = print(String.concatWith ", " (map Int.toString xs));
 
 in
 	fun powers2 filename =
@@ -49,8 +50,23 @@ in
 				in
 							dc2b (nu,leng)
 				end
+		fun take2 nu leng =
+			let
+				fun tk2 (n,len) =
+							let
+								val x = plin n
+								val p = List.nth(powers,x)
+								val i = #2 p
+						 in
+								if n >= len then [i] else (
+								i :: tk2 ((sin n),len)
+								)
+							end
+					in
+								tk2 (nu,leng)
+					end
 
-   	fun final le =
+   	fun final num le =
 			let
 				val AllBin = dec2binall 1 le
 				val t = List.nth(AllBin,1)
@@ -69,6 +85,6 @@ in
  		  end
 
 	in
-		  final len
+		  take2 1 len
 	end
 end

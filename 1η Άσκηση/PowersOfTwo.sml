@@ -28,7 +28,7 @@ local
 			dec2bin (x div 2) @ [(x mod 2)];
 
 	fun printList xs = print(String.concatWith ", " (map Int.toString xs));
-
+	fun arrayToList arr = Array.foldr (op ::) [] arr
 	fun sin2 n = n + 2
 in
 	fun powers2 filename =
@@ -117,8 +117,8 @@ in
 									val kop = []
 									val kop1 = Array.fromList(kop)
 								in
-						 			if(assoi1<i) then (updatelist num2; condition num2)
-									else if(ass=i)then go
+						 			if(assoi1<i) then (updatelist(num2); condition(num2))
+									else if(assoi1=i)then (printList(arrayToList(go)) ; go)
 									else kop1
 								end
 					 fun ifelse num1=

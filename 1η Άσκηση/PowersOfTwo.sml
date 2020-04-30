@@ -40,6 +40,7 @@ in
 									val x = plin n
 									val p = List.nth(powers,x)
 									val q = #1 p
+									val i = #2 p
 							 in
 									if n >= len then [dec2bin(q)] else (
 									dec2bin(q) :: dc2b ((sin n),len)
@@ -48,14 +49,13 @@ in
 				in
 							dc2b (nu,leng)
 				end
-   	fun finalresult le =
+
+   	fun final le =
 			let
 				val AllBin = dec2binall 1 le
-				val p = List.nth(powers,0)
-				val q = #2 p
-				val z = List.nth(AllBin,2)
-				val g = List.length z
-				val gi = plin g
+				val t = List.nth(AllBin,1)
+				val re = List.length t
+				val rep = plin re
 				fun count e i j =
 				   if i > j then 0
 				   else
@@ -64,15 +64,11 @@ in
 					  in
 					   if (List.nth(e,i)=1) then 1 + cnt else cnt
 					  end;
-				(*fun mexritelos lista assoi q =
-					if(assoi>q) then [] else (
-									)
-				*)						
 			in
-			 count z 0 gi
+			 count t 0 rep
  		  end
 
 	in
-		  	finalresult len
+		  final len
 	end
 end

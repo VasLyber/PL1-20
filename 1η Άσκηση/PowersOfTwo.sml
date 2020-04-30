@@ -88,36 +88,41 @@ in
 						 val length2 = List.length g
 						 val length22 = plin length2
 						 val ass = count g 0 length22
+						 val assoi = Array.array(1,ass)
 						 fun condition num2 =
 						 		let
+									val assoi1 = Array.sub(assoi,0)
 									fun indexfinder num5 =
 										let
-											val num55 = plin num5
-											val tr = Array.sub(go,num55)
+											val tr = Array.sub(go,num5)
 										in
-											if(tr>0)then num55
-											else indexfinder(sin(num55))
+											if(tr>0 andalso num5>0 )then num5
+											else indexfinder(sin(num5))
 										end
 									fun updatelist num3  =
 										let
-											val we = indexfinder 1
+											val we = indexfinder 0
 											val we1 = plin we
 											val numar = Array.sub(go,we)
 											val numarr = Array.sub(go,we1)
 											val numar1 = plin numar
 											val numarr1 = sin2 numarr
+											val assoi2 = sin assoi1
 										in
 										  Array.update(go,we,numar1);
-											Array.update(go,we,numarr1);
-											sin ass;
+											Array.update(go,we1,numarr1);
+											Array.update(assoi,0,assoi2);
 											go
 										end
+									val kop = []
+									val kop1 = Array.fromList(kop)
 								in
-						 			if(ass<i) then updatelist num2
-									else go
+						 			if(assoi1<i) then (updatelist num2; condition num2)
+									else if(ass=i)then go
+									else kop1
 								end
 					 fun ifelse num1=
-		 				if (num1 >=len2) then condition(num1) else (fin (sin num1); condition (sin(num1)))
+		 				if (num1 >=len2) then condition(num1) else (fin (sin num1); condition (num1))
 					in
 						ifelse n
 					end

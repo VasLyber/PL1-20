@@ -3,14 +3,9 @@
   fun sin2 lu = lu +2
   fun plin k = k -1
 
-  fun indexfinder (num5,go) =
-    let
-      val tr = Array.sub(go,num5)
-    in
-      if(tr>0 andalso num5>0 )then num5
+  fun indexfinder(num5,go) =
+      if(Array.sub(go,num5)>0)then num5
       else indexfinder(sin(num5),go)
-    end
-
 
 fun listoarr x =
   Array.fromList(x)

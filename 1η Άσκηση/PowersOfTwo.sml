@@ -27,7 +27,10 @@ local
 		else
 			dec2bin (x div 2) @ [(x mod 2)];
 
-	fun printList xs = print(String.concatWith ", " (map Int.toString xs));
+	fun printList xs = (print("[");
+	print(String.concatWith "," (map Int.toString xs));
+	print("]");
+	print("\n"))
 	fun arrayToList arr = Array.foldr (op ::) [] arr
 	fun sin2 n = n + 2
 in
@@ -67,7 +70,7 @@ in
 								tk2 (nu,leng)
 					end
 
-   	fun final num len1  =
+   	fun final num  =
 			let
 				val AllBin = dec2binall 1 len
 				val AllNum = take2all 1 len
@@ -79,58 +82,47 @@ in
 					  in
 					   if (List.nth(e,i)=1) then 1 + cnt else cnt
 					  end;
-				fun fin n len2 =
+				fun fin  n  =
 					let
 						 val x = plin n
-						 val g = List.nth(AllBin,x)
+						 val g = List.rev(List.nth(AllBin, plin n))
 						 val go = Array.fromList(g)
 						 val i = List.nth(AllNum,x)
 						 val length2 = List.length g
 						 val length22 = plin length2
 						 val ass = count g 0 length22
 						 val assoi = Array.array(1,ass)
+						 fun drop00 (foo,num) =
+						 	List.rev(List.drop(foo,num))
+						 fun indexfinder2 (foo,num5) =
+							  if(Array.sub(foo,num5)>0)then num5
+							  else indexfinder2(foo,sin(num5))
 						 fun condition num2 =
 						 		let
-									val assoi1 = Array.sub(assoi,0)
 									fun indexfinder num5 =
-										let
-											val tr = Array.sub(go,num5)
-										in
-											if(tr>0 andalso num5>0 )then num5
+											if(Array.sub(go,num5)>0)then num5
 											else indexfinder(sin(num5))
-										end
-									fun updatelist num3  =
-										let
-											val we = indexfinder 0
-											val we1 = plin we
-											val numar = Array.sub(go,we)
-											val numarr = Array.sub(go,we1)
-											val numar1 = plin numar
-											val numarr1 = sin2 numarr
-											val assoi2 = sin assoi1
-										in
-										  Array.update(go,we,numar1);
-											Array.update(go,we1,numarr1);
-											Array.update(assoi,0,assoi2);
-											go
-										end
-									val kop = []
-									val kop1 = Array.fromList(kop)
+
+									fun updatelist index  =(
+										  Array.update(go,index,plin(Array.sub(go,index)));
+											Array.update(go,plin(index),sin2(Array.sub(go,plin(index))));
+											Array.update(assoi,0,sin(Array.sub(assoi,0)));
+											drop00(List.rev(arrayToList(go)),indexfinder2(Array.fromList(List.rev(arrayToList(go))),0)))
 								in
-						 			if(assoi1<i) then (updatelist(num2); condition(num2))
-									else if(assoi1=i)then (printList(arrayToList(go)) ; go)
-									else kop1
+						 			if(Array.sub(assoi,0)<i) then (updatelist(indexfinder(1)); condition(num2))
+									else if(Array.sub(assoi,0)=i)then (	drop00(List.rev(arrayToList(go)),indexfinder2(Array.fromList(List.rev(arrayToList(go))),0)))
+									else []
 								end
-					 fun ifelse num1=
-		 				if (num1 >=len2) then condition(num1) else (fin (sin num1); condition (num1))
-					in
-						ifelse n
-					end
+					  fun ifelse num1=
+		 			  	if (num1 <=1) then printList(condition(num1)) else (fin(plin(num1));printList(condition(num1)))
+				in
+					ifelse n
+				end
 			in
-			 fin 1 len1
+			 fin len
  		  end;
 	 in
-		  final 1 len
+		  final len
 	 end;
 
 end;

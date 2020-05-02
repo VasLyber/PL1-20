@@ -1,32 +1,57 @@
+val Graph = Array.array(9,[0]);
 
-  fun sin l = l + 1
-  fun sin2 lu = lu +2
-  fun plin k = k -1
+Array.update(Graph,5,[2]);
+Array.update(Graph,2,[5]);
+Array.update(Graph,6,[0]);
+Array.update(Graph,0,[6]);
+Array.update(Graph,7,[8]);
+Array.update(Graph,8,[7]);
+Array.update(Graph,5,[3]);
+Array.update(Graph,3,[5]);
+Array.update(Graph,4,[0]);
+Array.update(Graph,0,4::Array.sub(Graph,0));
+Array.update(Graph,0,8::Array.sub(Graph,0));
+Array.update(Graph,8,0::Array.sub(Graph,8));
+Array.update(Graph,1,[4]);
+Array.update(Graph,4,1::Array.sub(Graph,4));
+Array.update(Graph,0,3::Array.sub(Graph,0));
+Array.update(Graph,3,0::Array.sub(Graph,3));
+Array.update(Graph,4,3::Array.sub(Graph,4));
+Array.update(Graph,3,4::Array.sub(Graph,3));
+fun sin k = k + 1
+fun plin k = k - 1
 
-  fun indexfinder(num5,go) =
-      if(Array.sub(go,num5)>0)then num5
-      else indexfinder(sin(num5),go)
+val Graph1 = Array.array(3,[0]);
 
-fun listoarr x =
-  Array.fromList(x)
-
-fun dec2bin (x) =
-		if x <= 1
-			then [x]
-		else
-		  dec2bin (x div 2) @ [(x mod 2)];
+Array.update(Graph1,1,[2]);
+Array.update(Graph1,2,[1]);
+Array.update(Graph1,0,[2]);
+Array.update(Graph1,2,0::Array.sub(Graph1,2));
 
 
-fun updatelist go =
+fun isCyclic go =
   let
-    val we = indexfinder (0,go)
-    val we1 = plin we
-    val numar = Array.sub(go,we)
-    val numarr = Array.sub(go,we1)
-    val numar1 = plin numar
-    val numarr1 = sin2 numarr
+    val visited = Array.array(3,0);
+    val bool = Array.array(1,0);
+    fun isCyclicUtil(v,prnt) =
+      let
+        val neighbour = Array.sub(Graph1,v)
+        val numberneighbour = List.length(neighbour)
+        fun checkneighbour(n) =
+          let
+            val neighb = Array.sub(Array.fromList(neighbour),n)
+            val vstd = Array.sub(visited,neighb)
+          in
+            if(vstd=0 andalso (n < numberneighbour)
+            then (checkneighbour(sin(n)); isCyclicUtil (n,v))
+            else if(n<>prnt andalso (n < numberneighbour)) then Array.update(bool,0,1)
+            else()
+          end
+      in
+        Array.update(visited,v,1);
+        checkneighbour(0)
+      end
   in
-    Array.update(go,we,numar1);
-    Array.update(go,we1,numarr1);
-    go
+    isCyclicUtil(0,~1);
+    bool
   end

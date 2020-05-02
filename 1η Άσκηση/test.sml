@@ -42,8 +42,8 @@ fun isCyclic go =
             val neighb = Array.sub(Array.fromList(neighbour),n)
             val vstd = Array.sub(visited,neighb)
           in
-            if(vstd=0 andalso (n < numberneighbour)
-            then (checkneighbour(sin(n)); isCyclicUtil (n,v))
+            if(vstd=0 andalso (n < plin(numberneighbour))) then (checkneighbour(sin(n)); isCyclicUtil (neighb,v))
+            else if(vstd=0 andalso (n = plin(numberneighbour))) then  isCyclicUtil (neighb,v)
             else if(n<>prnt andalso (n < numberneighbour)) then Array.update(bool,0,1)
             else()
           end

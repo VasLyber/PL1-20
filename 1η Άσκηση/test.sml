@@ -29,6 +29,22 @@ Array.update(Graph1,2,[1]);
 Array.update(Graph1,0,[2]);
 Array.update(Graph1,2,0::Array.sub(Graph1,2));
 
+(*
+fun inlist nu rmvlst =
+  let
+    val leng=List.length(rmvlst)
+    fun loop n =
+      let
+        val g = List.nth(rmvlst,n)
+      in
+        if(n<=plin(leng) andalso (g=nu)) then true
+        else if(n<plin(leng))then(loop(sin(n)))
+        else false
+      end
+  in
+    loop(0)
+  end
+*)
 fun ReturnCycle (go) =
   let
     val V = Array.length(go)
@@ -90,6 +106,8 @@ fun remove(go,rmlist) =
         Array.update(gp,)
 
 *)
+
+
   fun DFS(go) =
     let
       val V = Array.length(go)

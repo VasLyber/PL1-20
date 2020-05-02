@@ -70,8 +70,6 @@ Array.update(Graph2,7,5::Array.sub(Graph2,7));
 fun sin k = k + 1
 fun plin k = k - 1
 fun arrayToList arr = Array.foldr (op ::) [] arr
-
-
 fun ReturnCycle (go) =
   let
     val V = Array.length(go)
@@ -151,11 +149,14 @@ fun inlist(nu,rmvlst) =
     loop(0)
   end
 
-fun DFS(go) =
+fun printList(xs)= (print("CORONA ");print(String.concatWith " " (map Int.toString xs));print("\n"))
+
+fun DFS(go,no) =
     let
       val rmvl = ReturnCycle(go)
       val V = Array.length(go)
       val visited = Array.array(V,0)
+      val connected = Array.array(1,0);
       fun DFSUtil(v) =
         let
           val neighbour = Array.sub(go,v)
@@ -173,13 +174,41 @@ fun DFS(go) =
                 then checkneighbour(sin(n))
               else()
             end
-        (*  fun forall n =
-            if(n<List.length(go))*)
         in
           Array.update(visited,v,1);
+          Array.update(connected,0,sin(Array.sub(connected,0)));
           checkneighbour(0)
         end
     in
-      DFSUtil(0);
-      visited
+     DFSUtil(no);
+     List.hd(arrayToList(connected))
     end
+
+fun forall(go,n) =
+  if(n<plin(List.length(ReturnCycle(go)))) then DFS(go,List.nth(ReturnCycle(go),n))::forall(go,sin(n))
+  else [DFS(go,List.nth(ReturnCycle(go),n))]
+
+val k = forall(Graph,0);
+
+type intlist = int list
+type partition = intlist * int * intlist
+
+fun quicksort [] = []
+  | quicksort (pivot :: xs) =
+      partition xs ([], pivot, [])
+
+and partition [] (lt, pivot, ge) =
+    let
+
+      val ltSorted = quicksort lt
+      val geSorted = quicksort ge
+      val Sorted = ltSorted @ [pivot] @ geSorted
+    in
+      Sorted
+    end
+  | partition (x :: xs) (lt, pivot, ge) =
+      if x < pivot
+      then partition xs (x :: lt, pivot, ge)
+      else partition xs (lt, pivot, x:: ge)
+
+val p = quicksort(k)

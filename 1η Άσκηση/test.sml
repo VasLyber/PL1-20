@@ -29,6 +29,41 @@ Array.update(Graph1,2,[1]);
 Array.update(Graph1,0,[2]);
 Array.update(Graph1,2,0::Array.sub(Graph1,2));
 
+val Graph2 = Array.array(9,[0]);
+
+Array.update(Graph,3,[5]);
+Array.update(Graph,5,[3]);
+
+Array.update(Graph,7,[0]);
+Array.update(Graph,0,[7]);
+
+Array.update(Graph,2,[3]);
+Array.update(Graph,3,2::Array.sub(Graph,3));
+
+Array.update(Graph,1,[7]);
+Array.update(Graph,7,2::Array.sub(Graph,7));
+
+Array.update(Graph,5,6::Array.sub(Graph,5));
+Array.update(Graph,6,[5]);
+
+Array.update(Graph,8,[2]);
+Array.update(Graph,2,8::Array.sub(Graph,2));
+
+Array.update(Graph,3,6::Array.sub(Graph,3));
+Array.update(Graph,6,3::Array.sub(Graph,6));
+
+Array.update(Graph,0,4::Array.sub(Graph,0));
+Array.update(Graph,4,0);
+
+Array.update(Graph,3,8::Array.sub(Graph,3));
+Array.update(Graph,8,3::Array.sub(Graph,8));
+
+
+
+
+
+
+
 fun ReturnCycle (go) =
   let
     val V = Array.length(go)

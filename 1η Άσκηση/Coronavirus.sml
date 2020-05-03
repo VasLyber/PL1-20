@@ -83,7 +83,8 @@ local
         in
           Array.update(visited,v,1);
           Array.update(connected,0,sin(Array.sub(connected,0)));
-          checkneighbour(0)
+          if(numberneighbour>0) then checkneighbour(0)
+            else()
         end
     in
       isCyclicUtil(0);
@@ -120,7 +121,8 @@ local
           in
             Array.update(visited,v,1);
             Array.update(connected,0,sin(Array.sub(connected,0)));
-            checkneighbour(0)
+            if(numberneighbour>0) then checkneighbour(0)
+              else()
           end
       in
        DFSUtil(no);
@@ -144,15 +146,15 @@ in
           val l = readint instream
           val arra = Array.array(k,[])
           val _ = TextIO.inputLine instream
-          fun scanner(0,acc,n) = (acc)
-            | scanner(i,acc,n)=
+          fun scanner(0,acc,l) = (acc)
+            | scanner(i,acc,l)=
             let
               val d = readint instream
               val v = readint instream
             in
               Array.update(arra,plin(v),plin(d)::Array.sub(arra,plin(v)));
               Array.update(arra,plin(d),plin(v)::Array.sub(arra,plin(d)));
-              scanner((i - 1),((d,v) :: acc),n)
+              scanner((i - 1),((d,v) :: acc),l)
             end
         in
           scanner(l,[],l);

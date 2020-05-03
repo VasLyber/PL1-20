@@ -1,27 +1,9 @@
 local
-
-  fun parse file =
-    let
-      fun next_int input = Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
-      val stream = TextIO.openIn file
-      val n = next_int stream
-      val _ = TextIO.inputLine stream
-      fun scanner 0 acc n = (TextIO.closeIn stream; acc)
-        | scanner i acc n =
-        let
-          val d = next_int stream
-          val v = next_int stream
-        in
-          scanner (i - 1) ((d,v) :: acc) n
-        end
-    in
-      rev(scanner n [] n)
-    end
-
-  fun sin k = k + 1
   fun plin k = k - 1
+  fun sin k = k + 1
   fun arrayToList arr = Array.foldr (op ::) [] arr
-  fun printList(xs)= (print("CORONA ");print(String.concatWith " "
+  fun printList(xs)= (print("CORONA ");print(Int.toString(List.length(xs)));print("\n");
+    print(String.concatWith " "
     (map Int.toString xs));print("\n"))
     type intlist = int list
     type partition = intlist * int * intlist
@@ -150,13 +132,45 @@ local
     else [DFS(go,List.nth(ReturnCycle(go),n))]
 in
   fun coronograph filename =
-    let
-      val k = parse filename
+      let
+      fun readint input = Option.valOf (TextIO.scanStream
+        (Int.scan   StringCvt.DEC) input);
+      val instream = TextIO.openIn filename;
+      val n = readint instream
+      val _ = TextIO.inputLine instream
+      fun read file  =
+        let
+          val k = readint instream
+          val l = readint instream
+          val arra = Array.array(k,[])
+          val _ = TextIO.inputLine instream
+          fun scanner(0,acc,n) = (acc)
+            | scanner(i,acc,n)=
+            let
+              val d = readint instream
+              val v = readint instream
+            in
+              Array.update(arra,plin(v),plin(d)::Array.sub(arra,plin(v)));
+              Array.update(arra,plin(d),plin(v)::Array.sub(arra,plin(d)));
+              scanner((i - 1),((d,v) :: acc),n)
+            end
+        in
+          scanner(l,[],l);
+          arra
+        end
 
-      val p = ReturnCycle(go)
-      val t = List.length(p)
+      fun pla go=
+        if(ReturnCycle(go)<>[]) then printList(quicksort(forall(go,0)))
+        else print("NO CORONA\n")
+      fun loop k =
+        let
+          val Graph = read(filename)
+        in
+          if(k<plin(n))then( pla(Graph); loop(sin(k)))
+          else if(k=plin(n))then (TextIO.closeIn instream; pla(Graph))
+          else()
+        end
     in
-      if(t>O) then printList(quicksort(forall(go,0)))
-      else print("NO CORONA")
+      loop 0
     end
 end

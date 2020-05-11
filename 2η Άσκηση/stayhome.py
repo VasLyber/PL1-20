@@ -55,13 +55,8 @@ while frontier:
 
 
     frontier = list(next)
-    i += 2
-    # print("f")
-    # print(frontier)
-    # print("n")
-    # print(next)
-    # print("lev")
-    # print(len(level))
+    i += 1
+
 
 
 print(frontier)

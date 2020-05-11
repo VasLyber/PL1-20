@@ -42,8 +42,6 @@ while frontier:
         if u[0] < N-1 and (u[0]+1, u[1]) not in level and map[u[0]+1][u[1]] != 'X': #down
             level[(u[0]+1, u[1])] = i
             next.append((u[0]+1, u[1]))
-            if map[u[0]+1][u[1]] != 'A':
-                airports
         if u[1] > 0 and (u[0], u[1]-1) not in level and map[u[0]][u[1]-1] != 'X': #left
             level[(u[0], u[1]-1)] = i
             next.append((u[0], u[1]-1))
@@ -55,7 +53,7 @@ while frontier:
             next.append((u[0]-1, u[1]))
 
 
-    
+
     frontier = list(next)
     i += 2
     # print("f")
@@ -63,7 +61,7 @@ while frontier:
     # print("n")
     # print(next)
     # print("lev")
-    # print(len(level))  
+    # print(len(level))
 
 
 print(frontier)
@@ -71,4 +69,4 @@ print("~~")
 print(next)
 print("~")
 print(level)
-print("~")       
+print("~")

@@ -32,8 +32,33 @@ sum_list([H|T], Sum) :-
    sum_list(T, Rest),
    Sum is H + Rest.
 
-convert(L,M) :-
-  between(1,,B)
+replace_nth0(List, Index, OldElem, NewElem, NewList) :-
+  % predicate works forward: Index,List -> OldElem, Transfer
+  nth0(Index,List,OldElem,Transfer),
+  % predicate works backwards: Index,NewElem,Transfer -> NewList
+  nth0(Index,NewList,NewElem,Transfer).
+
+
+loop(L,P) :-
+  nth0(P,L,K),
+  (
+    K=<0 ->  plus(P,1,P), loop(L,P)
+  ;
+    plus(K,-1,U),
+    replace_nth0(L, P, Oe,U,L),
+    writeln('heil'),
+    plus(P,-1,P),
+    plus(K,2,G),
+    replace_nth0(L,P, Oe,G,L)
+  ).
+convert(E,P):-
+  sum_list(E,Q),
+  (
+    Q>=P ->  portray_clause(E)
+    ; loop(E,1),convert(E,P)
+  ).
+
+
 
 
 testlist([]).
@@ -41,13 +66,12 @@ testlist([H|T]) :-
   dec2bin(H,L),
   sum_list(L,Q),
   length(L,W),
-  portray_clause(Q),
   (
     Q>T -> portray_clause([]),
     fail
   ; Q =:= T ->
     portray_clause(L)
-%  ; convert(L,M), portray_clause(M)
+  ; convert(L,T)
   ).
 powers2(File) :-
   read_input(File, Ns, Num),

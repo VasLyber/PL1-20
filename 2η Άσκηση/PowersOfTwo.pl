@@ -46,7 +46,6 @@ loop(L,P) :-
   ;
     plus(K,-1,U),
     replace_nth0(L, P, Oe,U,L),
-    writeln('heil'),
     plus(P,-1,P),
     plus(K,2,G),
     replace_nth0(L,P, Oe,G,L)

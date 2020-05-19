@@ -4,11 +4,11 @@ read_input(File, N, Numbers) :-
     read_lines(Stream, N, Numbers).
 
 read_lines(Stream, N, Numbers) :-
-    ( N == 0 -> Numbers = []
-    ; N > 0  -> read_line(Stream, Number),
-                Nm1 is N-1,
-                read_lines(Stream, Nm1, RestNumbers),
-                Numbers = [Number | RestNumbers]).
+  ( N == 0 -> Numbers = []
+  ; N > 0  -> read_line(Stream, Number),
+              Nm1 is N-1,
+              read_lines(Stream, Nm1, RestNumbers),
+              Numbers = [Number | RestNumbers]).
 
 read_line(Stream, List) :-
     read_line_to_codes(Stream, Line),
@@ -32,47 +32,71 @@ sum_list([H|T], Sum) :-
    sum_list(T, Rest),
    Sum is H + Rest.
 
-replace_nth0(List, Index, OldElem, NewElem, NewList) :-
-  % predicate works forward: Index,List -> OldElem, Transfer
-  nth0(Index,List,OldElem,Transfer),
-  % predicate works backwards: Index,NewElem,Transfer -> NewList
-  nth0(Index,NewList,NewElem,Transfer).
+replace([_|T], 0, X, [X|T]).
+replace([H|T], I, X, [H|R]):- I > -1, NI is I-1, replace(T, NI, X, R), !.
 
+lead([],[]).
+lead([H|T],[H|T]) :-
+    dif(H,0).
+lead([0|T],T2) :-
+    lead(T,T2).
 
-loop(L,P) :-
+change(0,L,P,K,NewL) :-
+  plus(P,1,W),
+  loop(L,W,NewL).
+change(1,L,P,K,NewL) :-
+  plus(K,-1,U),
+  replace(L,P,U,O),
+  plus(P,-1,W),
+  nth0(W,L,PO),
+  plus(PO,2,G),
+  replace(O,W,G,NewL).
+
+loop(L,P,NewL) :-
   nth0(P,L,K),
-  (
-    K=<0 ->  plus(P,1,P), loop(L,P)
-  ;
-    plus(K,-1,U),
-    replace_nth0(L, P, Oe,U,L),
-    plus(P,-1,P),
-    plus(K,2,G),
-    replace_nth0(L,P, Oe,G,L)
-  ).
-convert(E,P):-
-  sum_list(E,Q),
-  (
-    Q>=P ->  portray_clause(E)
-    ; loop(E,1),convert(E,P)
-  ).
+  (K>0 -> ISONE is 1
+;ISONE is 0 ),
+  change(ISONE,L,P,K,NewL).
 
+loopconv(1,L,T,Answer) :-
+  loop(L,1,NewL),
+  convert(NewL,T,Answer).
 
+loopconv(0,L,T,Answer) :-
+  reverse(L,L1),
+  lead(L1,L2),
+  reverse(L2,L3),
+  Answer = L3.
 
+convert(L,T,Answer):-
+  sum_list(L,Q),
+  (Q<T -> ISONE is 1
+;ISONE is 0 ),
+  loopconv(ISONE,L,T,Answer).
 
 testlist([]).
-testlist([H|T]) :-
+testlist([H|T],Answer) :-
   dec2bin(H,L),
+  nth0(0,T,Dsrbin),
   sum_list(L,Q),
-  length(L,W),
   (
-    Q>T -> portray_clause([]),
-    fail
-  ; Q =:= T ->
-    portray_clause(L)
-  ; convert(L,T)
+    Q>Dsrbin -> Answer = []
+  ; Q =:= Dsrbin -> Answer = L
+  ; convert(L,Dsrbin,Answer)
   ).
-powers2(File) :-
+
+testlists(Ns, Answers,[H|T]) :-
+  (
+    Ns == 0 -> Answers = []
+  ; Ns == 1 -> testlist(H,Answer),
+               Ns1 is Ns-1,
+               testlists(Ns1, RestAnswers,[5,6]),
+               Answers = [Answer | RestAnswers]
+  ; Ns > 1 -> testlist(H,Answer),
+              Ns1 is Ns-1,
+              testlists(Ns1, RestAnswers,T),
+              Answers = [Answer | RestAnswers]).
+
+powers2(File,Answers) :-
   read_input(File, Ns, Num),
-  member(X,Num),
-  testlist(X).
+  testlists(Ns, Answers,Num).

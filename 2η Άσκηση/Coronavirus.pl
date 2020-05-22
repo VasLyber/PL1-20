@@ -1,40 +1,24 @@
-go(Start, Goal) :-
-	empty_stack(Empty_been_list),
-	stack(Start, Empty_been_list, Been_list),
-	path(Start, Goal, Been_list).
+read_input(File, N, Numbers) :-
+  %  open(File, read, Stream),
+  %  read_line(Stream, N),
+    read_lines(Stream, N, Numbers).
 
-	% path implements a depth first search in PROLOG
+read_lines(Stream, N, Numbers) :-
+  ( N == 0 -> Numbers = []
+  ; N > 0  -> read_line(Stream, Number),
+              Nm1 is N-1,
+              read_lines(Stream, Nm1, RestNumbers),
+              Numbers = [Number | RestNumbers]).
 
-	% Current state = goal, print out been list
-path(Goal, Goal, Been_list) :-
-	reverse_print_stack(Been_list).
+read_line(Stream, List) :-
+    read_line_to_codes(Stream, Line),
+    ( Line = [] -> List = []
+    ; atom_codes(A, Line),
+      atomic_list_concat(As, ' ', A),
+      maplist(atom_number, As, List)
+    ).
 
-path(State, Goal, Been_list) :-
-	mov(State, Next),
-	% not(unsafe(Next)),
-	not(member_stack(Next, Been_list)),
-	stack(Next, Been_list, New_been_list),
-	path(Next, Goal, New_been_list), !.
-
-reverse_print_stack(S) :-
-	empty_stack(S).
-reverse_print_stack(S) :-
-	stack(E, Rest, S),
-	reverse_print_stack(Rest),
-	write(E), nl.
-
-dfs_search_node(Tree,Node, N) :-
-	dfs_search_node_(Tree,Node, 1, _, N).
-
-
-dfs_search_node_(tree(Node, _, _), Node, FN, _, FN) :- !.
-
-dfs_search_node_(tree(_, L, R), Node, CN, _TN, FN) :-
-	CN1 is CN + 1,
-	dfs_search_node_(L, Node, CN1, TN1, FN),
-	(   CN1 \== FN
-	->  dfs_search_node_(R, Node, TN1, _TN, FN)
-	;   true).
-
-dfs_search_node_(nil, _Node, CN, TN, _FN) :-
-	TN is CN + 1.
+coronograph(File) :-
+	open(File, read, Stream),
+	read_line(Stream, N),
+	read_input(File, Ns, Num),

@@ -1,4 +1,4 @@
-read_input(File, Term) :-
+read_input(File, Term, K) :-
     open(File, read, Stream),
     read_line_to_codes(Stream, Line),
     atom_codes(A, Line),
@@ -31,6 +31,7 @@ read_lines(Stream, N, Term) :-
                 read_lines(Stream, Nm1,Term)
   ).
 
+
 initialize(Visited,N) :-
 ( N == 0 ->   true
 ; N > 0  -> setarg(N,Visited,0),
@@ -38,25 +39,117 @@ initialize(Visited,N) :-
             initialize(Visited,Nm1)
 ).
 
-
 iteratedfs([],Term,Visited).
 iteratedfs([H|T],Term,Visited) :-
-arg(H,Term,TM),
+arg(H,Visited,TM),
 ( TM == 0 -> dfsutil(H,Visited,Term),
              iteratedfs(T,Term,Visited)
 ; TM == 1 -> iteratedfs(T,Term,Visited)
 ).
-
-dfs(K,Term) :-
-  functor(Visited,array,K),
-  initialize(Visited,K),
-  dfsutil(K,Visited,Term).
 
 dfsutil(K,Visited,Term) :-
   setarg(K,Visited,1),
   arg(K,Term,List),
   iteratedfs(List,Term,Visited).
 
+dfs(K,Term,Visited,L) :-
+  functor(Visited,array,K),
+  initialize(Visited,K),
+  dfsutil(L,Visited,Term).
+
+initializecycle(Visited,N,Parent) :-
+( N == 0 ->   true
+; N > 0  -> setarg(N,Visited,0),
+            setarg(N,Parent,-1),
+            Nm1 is N-1,
+            initializecycle(Visited,Nm1,Parent)
+).
+returncycle(Parent,Cycle,H,P,PA) :-
+  (H \= P ->  arg(P,Parent,Q),
+              returncycle(Parent,ResCycle,H,Q,PA),
+              Cycle = [P|ResCycle]
+  ;H == P -> Cycle = [P,PA]
+  ).
+
+iteratecycle([],Term,Visited,P,Parent,Cycle).
+iteratecycle([H|T],Term,Visited,P,Parent,Cycle) :-
+arg(H,Visited,TM),
+arg(H,Parent,PA),
+( TM == 0 -> iscycleutil(H,Visited,Term,Parent,P,Cycle),
+            (not(var(Cycle))-> !
+            ; var(Cycle)->iteratecycle(T,Term,Visited,H,Parent,Cycle)
+            )
+; TM == 1 , PA\=P -> returncycle(Parent,Cycle,H,P,PA)
+; TM == 1 -> iteratecycle(T,Term,Visited,H,Parent,Cycle)
+).
+
+iscycleutil(K,Visited,Term,Parent,P,Cycle) :-
+  setarg(K,Visited,1),
+  arg(K,Term,List),
+  setarg(K,Parent,P),
+  iteratecycle(List,Term,Visited,K,Parent,Cycle).
+
+remove_list([], _, []).
+remove_list([X|Tail], L2, Result):- member(X, L2), !, remove_list(Tail, L2, Result).
+remove_list([X|Tail], L2, [X|Result]):- remove_list(Tail, L2, Result).
+
+iscycle(K,Term,Visited,Cycle) :-
+  functor(Visited,array,K),
+  functor(Parent,array,K),
+  initializecycle(Visited,K,Parent),
+  iscycleutil(K,Visited,Term,Parent,-1,Cycle).
+
+newgraph(Term,[],Cycle).
+newgraph(Term,[H|T],Cycle):-
+  arg(H,Term,L),
+  remove_list(L,Cycle,I),
+  setarg(H,Term,I),
+  newgraph(Term,T,Cycle)
+  .
+
+loop(Visited,Ass,N):-
+  (N == 0 -> true
+  ;N > 0 -> arg(N,Visited,U),
+            arg(1,Ass,Y),
+            (U ==1 -> plus(Y,1,R)
+            ;U\=1 -> R is Y
+            ),
+            setarg(1,Ass,R),
+            Nm is N - 1,
+            loop(Visited,Ass,Nm)
+  ).
+fortree(Term,[],NUM,K,O) :-
+  NUM = [].
+fortree(Term,[H|T],NUM,K,O):-
+  dfs(K,Term,Visited,H),
+  functor(Ass,array,1),
+  setarg(1,Ass,0),
+  loop(Visited,Ass,K),
+  arg(1,Ass,W),
+  fortree(Term,T,ResNUM,K,O),
+  NUM = [W|ResNUM].
+
+final(Sum,Final,Fin):-
+  Fin = [Sum,Final].
+
 coronograph(File) :-
-  read_input(File,Term),
-  portray_clause(Term) .
+  read_input(File,Term,K),
+  dfs(K,Term,Visited,K),
+  Visited =..List,
+  min_member(Min, List),
+  (Min == 0 -> portray_clause("NO CORONA"),!
+   ;Min\=0 ->iscycle(K,Term,Visited,Cycle),
+            (var(Cycle) -> portray_clause("NO CORONA"),!
+                            ;not(var(Cycle))->newgraph(Term,Cycle,Cycle),
+                                              iscycle(K,Term,Visited,Cycle1),
+                                              (var(Cycle) -> portray_clause("NO CORONA"),!
+                                              ;not(var(Cycle))-> length(Cycle,Sum),
+                                                                 fortree(Term,Cycle,NUM,K,Sum),
+                                                                 sort(NUM, Final),
+                                                                 final(Sum,Final,Fin),
+                                                                 portray_clause(Fin)
+
+                                              )
+            )
+
+  ).

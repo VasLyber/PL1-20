@@ -30,6 +30,33 @@ read_lines(Stream, N, Term) :-
                 Nm1 is N-1,
                 read_lines(Stream, Nm1,Term)
   ).
+
+initialize(Visited,N) :-
+( N == 0 ->   true
+; N > 0  -> setarg(N,Visited,0),
+            Nm1 is N-1,
+            initialize(Visited,Nm1)
+).
+
+
+iteratedfs([],Term,Visited).
+iteratedfs([H|T],Term,Visited) :-
+arg(H,Term,TM),
+( TM == 0 -> dfsutil(H,Visited,Term),
+             iteratedfs(T,Term,Visited)
+; TM == 1 -> iteratedfs(T,Term,Visited)
+).
+
+dfs(K,Term) :-
+  functor(Visited,array,K),
+  initialize(Visited,K),
+  dfsutil(K,Visited,Term).
+
+dfsutil(K,Visited,Term) :-
+  setarg(K,Visited,1),
+  arg(K,Term,List),
+  iteratedfs(List,Term,Visited).
+
 coronograph(File) :-
   read_input(File,Term),
   portray_clause(Term) .

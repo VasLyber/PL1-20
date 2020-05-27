@@ -31,6 +31,14 @@ read_lines(Stream, N, Term) :-
   ).
 
 
+read_line(Stream, List) :-
+    read_line_to_codes(Stream, Line),
+    ( Line = [] -> List = []
+    ; atom_codes(A, Line),
+      atomic_list_concat(As, ' ', A),
+      maplist(atom_number, As, List)
+    ).
+
 initialize(Visited,N) :-
 ( N == 0 ->   true
 ; N > 0  -> setarg(N,Visited,0),
@@ -131,25 +139,40 @@ fortree(Term,[H|T],NUM,K,O):-
 final(Sum,Final,Fin):-
   Fin = [Sum,Final].
 
-coronograph(File) :-
-  open(File, read, Stream),
-  read_input(File,Term,K),
-  dfs(K,Term,Visited,K),
-  Visited =..List,
-  min_member(Min, List),
-  (Min == 0 -> portray_clause("NO CORONA"),!
-   ;Min\=0 ->iscycle(K,Term,Visited,Cycle),
-            (var(Cycle) -> portray_clause("NO CORONA"),!
-                            ;not(var(Cycle))->newgraph(Term,Cycle,Cycle),
-                                              iscycle(K,Term,Visited,Cycle1),
-                                              (not(var(Cycle1)) -> portray_clause("NO CORONA"),!
-                                              ;var(Cycle1)-> length(Cycle,Sum),
-                                                                 fortree(Term,Cycle,NUM,K,Sum),
-                                                                 msort(NUM, Final),
-                                                                 final(Sum,Final,Fin),
-                                                                 portray_clause(Fin)
 
-                                              )
+loop1(N,Answers,Stream):-
+  (N == 0 -> Answers = []
+  ;N > 0 -> read_input(Stream, Term, K),
+            dfs(K,Term,Visited,K),
+            Visited =..List,
+            min_member(Min, List),
+            X = 'NO CORONA',
+            term_string(X, String),
+            (Min == 0 -> Nm is N-1,
+                         loop1(Nm,ResAnswers,Stream),
+                         Answers = [String|ResAnswers],!
+             ;Min\=0 ->iscycle(K,Term,Visited,Cycle),
+                      (var(Cycle) ->  Nm is N-1,
+                                      loop1(Nm,ResAnswers,Stream),
+                                      Answers = [String|ResAnswers],!
+                      ;not(var(Cycle))->newgraph(Term,Cycle,Cycle),
+                      iscycle(K,Term,Visited,Cycle1),
+                      (not(var(Cycle1)) -> Nm is N-1,
+                                           loop1(Nm,ResAnswers,Stream),
+                                           Answers = [String|ResAnswers],!
+                      ;var(Cycle1)-> length(Cycle,Sum),
+                       fortree(Term,Cycle,NUM,K,Sum),
+                       msort(NUM, Final),
+                       final(Sum,Final,Fin),
+                       Nm is N-1,
+                       loop1(Nm,ResAnswers,Stream),
+                       Answers = [Fin|ResAnswers],!
+                      )
+                      )
+
             )
-
   ).
+coronograph(File,Answers) :-
+  open(File, read, Stream),
+  read_line(Stream, N),
+  loop1(N,Answers,Stream).

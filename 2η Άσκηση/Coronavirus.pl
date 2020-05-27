@@ -1,5 +1,4 @@
-read_input(File, Term, K) :-
-    open(File, read, Stream),
+read_input(Stream, Term, K) :-
     read_line_to_codes(Stream, Line),
     atom_codes(A, Line),
     atomic_list_concat(As, ' ', A),
@@ -65,22 +64,22 @@ initializecycle(Visited,N,Parent) :-
             initializecycle(Visited,Nm1,Parent)
 ).
 returncycle(Parent,Cycle,H,P,PA) :-
-  (H \= P ->  arg(P,Parent,Q),
+  (PA \= P ->  arg(P,Parent,Q),
               returncycle(Parent,ResCycle,H,Q,PA),
               Cycle = [P|ResCycle]
-  ;H == P -> Cycle = [P,PA]
+  ;PA == P -> Cycle = [H,PA]
   ).
 
 iteratecycle([],Term,Visited,P,Parent,Cycle).
 iteratecycle([H|T],Term,Visited,P,Parent,Cycle) :-
 arg(H,Visited,TM),
-arg(H,Parent,PA),
+arg(P,Parent,PA),
 ( TM == 0 -> iscycleutil(H,Visited,Term,Parent,P,Cycle),
             (not(var(Cycle))-> !
-            ; var(Cycle)->iteratecycle(T,Term,Visited,H,Parent,Cycle)
+            ; var(Cycle)->iteratecycle(T,Term,Visited,P,Parent,Cycle)
             )
-; TM == 1 , PA\=P -> returncycle(Parent,Cycle,H,P,PA)
-; TM == 1 -> iteratecycle(T,Term,Visited,H,Parent,Cycle)
+; TM == 1 , PA\=H -> returncycle(Parent,Cycle,P,PA,H)
+; TM == 1 -> iteratecycle(T,Term,Visited,P,Parent,Cycle)
 ).
 
 iscycleutil(K,Visited,Term,Parent,P,Cycle) :-
@@ -133,6 +132,7 @@ final(Sum,Final,Fin):-
   Fin = [Sum,Final].
 
 coronograph(File) :-
+  open(File, read, Stream),
   read_input(File,Term,K),
   dfs(K,Term,Visited,K),
   Visited =..List,
@@ -142,10 +142,10 @@ coronograph(File) :-
             (var(Cycle) -> portray_clause("NO CORONA"),!
                             ;not(var(Cycle))->newgraph(Term,Cycle,Cycle),
                                               iscycle(K,Term,Visited,Cycle1),
-                                              (var(Cycle) -> portray_clause("NO CORONA"),!
-                                              ;not(var(Cycle))-> length(Cycle,Sum),
+                                              (not(var(Cycle1)) -> portray_clause("NO CORONA"),!
+                                              ;var(Cycle1)-> length(Cycle,Sum),
                                                                  fortree(Term,Cycle,NUM,K,Sum),
-                                                                 sort(NUM, Final),
+                                                                 msort(NUM, Final),
                                                                  final(Sum,Final,Fin),
                                                                  portray_clause(Fin)
 

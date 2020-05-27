@@ -96,23 +96,22 @@ iscycleutil(K,Visited,Term,Parent,P,Cycle) :-
   setarg(K,Parent,P),
   iteratecycle(List,Term,Visited,K,Parent,Cycle).
 
-remove_list([], _, []).
-remove_list([X|Tail], L2, Result):- member(X, L2), !, remove_list(Tail, L2, Result).
-remove_list([X|Tail], L2, [X|Result]):- remove_list(Tail, L2, Result).
-
 iscycle(K,Term,Visited,Cycle) :-
   functor(Visited,array,K),
   functor(Parent,array,K),
   initializecycle(Visited,K,Parent),
   iscycleutil(K,Visited,Term,Parent,-1,Cycle).
 
+remove_list([], _, []).
+remove_list([X|Tail], L2, Result):- member(X, L2), !, remove_list(Tail, L2, Result).
+remove_list([X|Tail], L2, [X|Result]):- remove_list(Tail, L2, Result).
+
 newgraph(Term,[],Cycle).
 newgraph(Term,[H|T],Cycle):-
   arg(H,Term,L),
   remove_list(L,Cycle,I),
   setarg(H,Term,I),
-  newgraph(Term,T,Cycle)
-  .
+  newgraph(Term,T,Cycle).
 
 loop(Visited,Ass,N):-
   (N == 0 -> true
@@ -125,6 +124,7 @@ loop(Visited,Ass,N):-
             Nm is N - 1,
             loop(Visited,Ass,Nm)
   ).
+
 fortree(Term,[],NUM,K,O) :-
   NUM = [].
 fortree(Term,[H|T],NUM,K,O):-
@@ -138,7 +138,6 @@ fortree(Term,[H|T],NUM,K,O):-
 
 final(Sum,Final,Fin):-
   Fin = [Sum,Final].
-
 
 loop1(N,Answers,Stream):-
   (N == 0 -> Answers = []
@@ -169,7 +168,6 @@ loop1(N,Answers,Stream):-
                        Answers = [Fin|ResAnswers],!
                       )
                       )
-
             )
   ).
 coronograph(File,Answers) :-

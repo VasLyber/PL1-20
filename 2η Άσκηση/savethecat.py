@@ -45,7 +45,7 @@ while frontier:
             level[(u[0]-1, u[1])] = i
             next.append((u[0]-1, u[1]))
 
-    
+
     frontier = list(next)
     i += 1
     # print("f")
@@ -53,7 +53,7 @@ while frontier:
     # print("n")
     # print(next)
     # print("lev")
-    # print(len(level))  
+    # print(len(level))
 
 
 print(frontier)
@@ -78,8 +78,6 @@ max_time = -1
 target = (-1, -1)
 frontier = [cat]
 i = 1
-
-
 
 while frontier:
     next = []

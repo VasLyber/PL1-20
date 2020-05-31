@@ -1,9 +1,7 @@
 fun parse file =
     let
-  	    (* Open input file. *)
       	val inStream = TextIO.openIn file
 
-        (* Reads lines until EOF and puts them in a list as char lists *)
         fun readLines acc =
           let
             val newLineOption = TextIO.inputLine inStream
@@ -57,7 +55,7 @@ fun insert2DList t p =
 fun findVirusAndTsiord map N M =
   let
     fun loop ~1 ~1 acc = acc
-      | loop i j (tsiord,virus,airportPumps) =
+      | loop i j (tsiord,virus,tsiordFin,airportPumps) =
         let
           val cellValue = valOf (S.find (map, (i,j)))
 
@@ -65,6 +63,11 @@ fun findVirusAndTsiord map N M =
             if cellValue = #"S"
             then (i,j)
             else tsiord
+
+          val newTsiordFin =
+            if cellValue = #"T"
+            then (i,j)
+            else tsiordFin
 
           val newAirportPumps =
             if cellValue = #"A"
@@ -83,10 +86,112 @@ fun findVirusAndTsiord map N M =
             then (~1,~1)
             else (i,j+1)
         in
-          loop (#1 nextIter) (#2 nextIter) (newTsiord,newVirus,newAirportPumps)
+          loop (#1 nextIter) (#2 nextIter) (newTsiord,newVirus,newTsiordFin,newAirportPumps)
         end;
   in
-    loop 0 0 (~1,~1,~1)
+    loop 0 0 ((~1,~1),(~1,~1),(~1,~1),[])
+  end;
+
+fun insertListInFifo [] value q = 1
+  | insertListInFifo (x::xs) value q  =
+    let
+      val unused = Queue.enqueue(q,(x,value))
+    in
+      insertListInFifo xs value q
+    end;
+
+fun insertListinTree [] t _ = t
+    | insertListinTree (x::xs) t v = insertListinTree xs (S.insert (t,x,v)) v
+
+fun sin n = n + 1
+
+
+fun bfs t N M startingPoint =
+  let
+    val q = Queue.mkQueue(): ((int * int) * int) Queue.queue
+    val unused = insertListInFifo startingPoint 0 q
+    val resultTree = insertListinTree startingPoint S.empty (0,(~1,~1))
+    val flag = Array.array(1,0)
+    val flag2 = Array.array(1,0)
+    val air = Array.array(1,0)
+    fun findNeighbors t (x,y) N M visited =
+      let
+        val down = (x+1,y)
+        val left = (x,y-1)
+        val right = (x,y+1)
+        val up = (x-1,y)
+
+        val result1 =
+        if ( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE)
+        then  (if ( Array.sub(flag,0)==1 ) then Array.update(air,0,sin(Array.sub(air,0)))),
+              (if ( Array.sub(air,0)==6 ) then
+              [up]
+        else []
+
+        val result2 =
+        if ( (#2 right) < M ) andalso ((valOf (S.find (t,right))) <> #"X") andalso (S.find(visited,right) = NONE)
+        then right::result1
+        else result1
+
+        val result3 =
+        if ( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE)
+        then left::result2
+        else result2
+
+        val result4 =
+        if ( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE)
+        then down::result3
+        else result3
+      in
+        result4
+    end;
+
+    fun findNeighbors2 t (x,y) N M visited =
+      let
+        val down = (x+1,y)
+        val left = (x,y-1)
+        val right = (x,y+1)
+        val up = (x-1,y)
+
+        val result1 =
+        if ( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE)
+        then [up]
+        else []
+
+        val result2 =
+        if ( (#2 right) < M ) andalso ((valOf (S.find (t,right))) <> #"X") andalso (S.find(visited,right) = NONE)
+        then right::result1
+        else result1
+
+        val result3 =
+        if ( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE)
+        then left::result2
+        else result2
+
+        val result4 =
+        if ( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE)
+        then down::result3
+        else result3
+      in
+        result4
+    end;
+    fun bfsLoop tree true = tree
+      | bfsLoop tree isQueueEmpty =
+        let
+          val NodeAndTime = Queue.dequeue(q)
+          val currentNode = (#1 NodeAndTime)
+          val time = (#2 NodeAndTime)
+          if ((time mod 2) == 0 )then val neighbors = findNeighbors t currentNode N M tree
+          else if ((time mod 2) == 1) val neighbors = findNeighbors2 t currentNode N M tree
+          val unused2 = insertListInFifo neighbors (time+1) q
+          val newResultTree = insertListinTree neighbors tree (time+1,currentNode)
+
+        in
+          bfsLoop newResultTree  (Queue.isEmpty (q))
+    end;
+
+  in
+    bfsLoop resultTree  (Queue.isEmpty (q))
   end;
 
 fun stayhome file =
@@ -99,8 +204,11 @@ fun stayhome file =
     val points =  findVirusAndTsiord tree N M;
     val tsiordPos = #1 points;
     val virusPos = #2 points;
-    val airpoPos = #3 points;
+    val tsiordFinPos = #3 points;
+    val airportPos = #4 points;
+
+    val virusTree = bfs tree N M [virusPos];
 
   in
-    virusPos
+    virusTree
   end;

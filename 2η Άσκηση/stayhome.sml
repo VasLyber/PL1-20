@@ -126,34 +126,82 @@ fun bfs t N M startingPoint airportPos =
 
         val result1 =
         if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE))
-        then  ((if ( Array.sub(flag,0)==1 ) then Array.update(air,0,sin(Array.sub(air,0)))),
-              (if ( Array.sub(air,0)==6 ) then (
-                                                      insertListInFifo airportPos 0 q2,
-                                                      Array.update(flag,0,0),
-                                                      Array.update(flag2,0,1),
-                                                      Array.update(air,0,0)
-              )),
-              (if(List.exists((valOf (S.find (t,up)))),airportPos) then (
-                                                                            Array.update(flag,0,0)
-                                                                          )
-              ),
-              [up]
-              )
+        then [up]
         else []
+        val unused4 =
+        if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE) andalso ( Array.sub(flag,0)=1 ))
+        then  Array.update(air,0,sin(Array.sub(air,0)))
+        else ();
+        val unused4 = if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE) andalso ( Array.sub(air,0)=6 ))
+        then (
+                                                insertListInFifo airportPos 0 q2;
+                                                Array.update(flag,0,0);
+                                                Array.update(flag2,0,1);
+                                                Array.update(air,0,0)
+        )
+        else ();
+        val unused4 = if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE) andalso ( Array.sub(flag,0)=1 ) andalso  (List.exists (fn y => y =up) airportPos) )
+        then Array.update(flag,0,0)
+        else ();
+
         val result2 =
         if ( (#2 right) < M ) andalso ((valOf (S.find (t,right))) <> #"X") andalso (S.find(visited,right) = NONE)
         then right::result1
         else result1
+        val unused4 = if (((#2 right) < M  ) andalso ((valOf (S.find (t,right))) <> #"X")  andalso (S.find(visited,right) = NONE) andalso ( Array.sub(flag,0)=1 ))
+        then  Array.update(air,0,sin(Array.sub(air,0)))
+        else ();
+        val unused4 = if (((#2 right) < M  ) andalso ((valOf (S.find (t,right))) <> #"X")  andalso (S.find(visited,right) = NONE) andalso ( Array.sub(air,0)=6 ))
+        then (
+                                                insertListInFifo airportPos 0 q2;
+                                                Array.update(flag,0,0);
+                                                Array.update(flag2,0,1);
+                                                Array.update(air,0,0)
+        )
+        else ();
+        val unused4 = if (((#2 right) < M  ) andalso ((valOf (S.find (t,right))) <> #"X")  andalso (S.find(visited,right) = NONE) andalso ( Array.sub(flag,0)=1 ) andalso  (List.exists (fn y => y =right) airportPos))
+        then Array.update(flag,0,0)
+        else ();
+
 
         val result3 =
         if ( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE)
         then left::result2
         else result2
+        val unused4 = if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE) andalso ( Array.sub(flag,0)=1 ))
+        then  Array.update(air,0,sin(Array.sub(air,0)))
+        else ();
+        val unused4 = if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE) andalso ( Array.sub(air,0)=6 ))
+        then (
+                                                insertListInFifo airportPos 0 q2;
+                                                Array.update(flag,0,0);
+                                                Array.update(flag2,0,1);
+                                                Array.update(air,0,0)
+        )
+        else ();
+        val unused4 = if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE) andalso ( Array.sub(flag,0)=1 ) andalso (List.exists (fn y => y =left) airportPos))
+        then Array.update(flag,0,0)
+        else ();
 
         val result4 =
         if ( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE)
         then down::result3
         else result3
+        val unused4 = if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE) andalso ( Array.sub(flag,0)=1 ))
+        then  Array.update(air,0,sin(Array.sub(air,0)))
+        else ();
+        val unused4 = if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE) andalso ( Array.sub(air,0)=6 ))
+        then (
+                                                insertListInFifo airportPos 0 q2;
+                                                Array.update(flag,0,0);
+                                                Array.update(flag2,0,1);
+                                                Array.update(air,0,0)
+        )
+        else ();
+        val unused4 = if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE) andalso ( Array.sub(flag,0)=1 ) andalso   (List.exists (fn y => y =down) airportPos))
+        then Array.update(flag,0,0)
+        else ();
+
       in
         result4
       end;
@@ -190,28 +238,36 @@ fun bfs t N M startingPoint airportPos =
     fun bfsLoop tree true = tree
           | bfsLoop tree isQueueEmpty =
       let
-            if ((Array.sub(times,0) mod 2) == 0 )then (
-              val NodeAndTime = Queue.dequeue(q),
-              val currentNode = (#1 NodeAndTime),
-              val time = (#2 NodeAndTime),
-              val neighbors = findNeighbors t currentNode N M tree,
-              Array.update(times,0,sin(Array.sub(times,0))),
-              val unused3 = insertListInFifo neighbors Array.sub(times,0) q
-            )
-            else if ((Array.sub(times,0) mod 2) == 1) (
-              val NodeAndTime = Queue.dequeue(q2),
-              val currentNode = (#1 NodeAndTime),
-              val time = (#2 NodeAndTime),
-              val neighbors = findNeighbors2 t currentNode N M tree,
-              Array.update(times,0,sin(Array.sub(times,0))),
-              val unused3 = insertListInFifo neighbors Array.sub(times,0) q2
-            )
-            val newResultTree = insertListinTree neighbors tree (Array.sub(times,0),currentNode)
+        val NodeAndTime = Queue.head(q)
+        val currentNode = (#1 NodeAndTime)
+        val neighbors = findNeighbors t currentNode N M tree
+        val NodeAndTime2 = Queue.dequeue(q2)
+        val currentNode2 = (#1 NodeAndTime2)
+        val neighbors2 = findNeighbors2 t currentNode2 N M tree
+        val time = Array.sub(times,0)
+        val unused4 = if ((Array.sub(times,0) mod 2) = 0 )then
+        (
+          Queue.dequeue(q);
+          insertListInFifo neighbors time q ;
+          Array.update(times,0,sin(Array.sub(times,0)))
+        )
+        else ()
+        val unused4 = if ((Array.sub(times,0) mod 2) = 1) then (
+          Queue.dequeue(q2);
+          insertListInFifo neighbors2 time q2 ;
+          Array.update(times,0,sin(Array.sub(times,0)))
+        )
+        else ()
       in
-              bfsLoop newResultTree  (Queue.isEmpty(q) orelse Queue.isEmpty (q2))
+        if ((Array.sub(times,0) mod 2) = 0 )then
+        (Array.update(times,0,sin(Array.sub(times,0)));
+        bfsLoop insertListinTree neighbors tree (time,currentNode) (Queue.isEmpty(q) orelse Queue.isEmpty (q2)))
+        else
+        (Array.update(times,0,sin(Array.sub(times,0)));
+        bfsLoop insertListinTree neighbors2 tree (time,currentNode2) (Queue.isEmpty(q) orelse Queue.isEmpty (q2)))
       end;
   in
-    bfsLoop resultTree  (Queue.isEmpty (q))
+    bfsLoop resultTree (Queue.isEmpty(q) orelse Queue.isEmpty(q2))
   end;
 
 fun stayhome file =
@@ -228,7 +284,7 @@ fun stayhome file =
     val airportPos = #4 points;
     val airports = Array.fromList(airportPos);
 
-    (*val virusTree = bfs tree N M [virusPos] airportPos;*)
+    val virusTree = bfs tree N M [virusPos] airportPos;
 
   in
     airports

@@ -105,15 +105,18 @@ fun insertListinTree [] t _ = t
 
 fun sin n = n + 1
 
+fun plin n = n - 1
 
-fun bfs t N M startingPoint =
+fun bfs t N M startingPoint airportPos =
   let
     val q = Queue.mkQueue(): ((int * int) * int) Queue.queue
     val unused = insertListInFifo startingPoint 0 q
     val resultTree = insertListinTree startingPoint S.empty (0,(~1,~1))
+    val q2 = Queue.mkQueue(): ((int * int) * int) Queue.queue
     val flag = Array.array(1,0)
     val flag2 = Array.array(1,0)
     val air = Array.array(1,0)
+    val times = Array.array(1,0)
     fun findNeighbors t (x,y) N M visited =
       let
         val down = (x+1,y)
@@ -122,12 +125,21 @@ fun bfs t N M startingPoint =
         val up = (x-1,y)
 
         val result1 =
-        if ( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE)
-        then  (if ( Array.sub(flag,0)==1 ) then Array.update(air,0,sin(Array.sub(air,0)))),
-              (if ( Array.sub(air,0)==6 ) then
+        if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE))
+        then  ((if ( Array.sub(flag,0)==1 ) then Array.update(air,0,sin(Array.sub(air,0)))),
+              (if ( Array.sub(air,0)==6 ) then (
+                                                      insertListInFifo airportPos 0 q2,
+                                                      Array.update(flag,0,0),
+                                                      Array.update(flag2,0,1),
+                                                      Array.update(air,0,0)
+              )),
+              (if(List.exists((valOf (S.find (t,up)))),airportPos) then (
+                                                                            Array.update(flag,0,0)
+                                                                          )
+              ),
               [up]
+              )
         else []
-
         val result2 =
         if ( (#2 right) < M ) andalso ((valOf (S.find (t,right))) <> #"X") andalso (S.find(visited,right) = NONE)
         then right::result1
@@ -144,7 +156,7 @@ fun bfs t N M startingPoint =
         else result3
       in
         result4
-    end;
+      end;
 
     fun findNeighbors2 t (x,y) N M visited =
       let
@@ -174,22 +186,30 @@ fun bfs t N M startingPoint =
         else result3
       in
         result4
-    end;
+      end;
     fun bfsLoop tree true = tree
-      | bfsLoop tree isQueueEmpty =
-        let
-          val NodeAndTime = Queue.dequeue(q)
-          val currentNode = (#1 NodeAndTime)
-          val time = (#2 NodeAndTime)
-          if ((time mod 2) == 0 )then val neighbors = findNeighbors t currentNode N M tree
-          else if ((time mod 2) == 1) val neighbors = findNeighbors2 t currentNode N M tree
-          val unused2 = insertListInFifo neighbors (time+1) q
-          val newResultTree = insertListinTree neighbors tree (time+1,currentNode)
-
-        in
-          bfsLoop newResultTree  (Queue.isEmpty (q))
-    end;
-
+          | bfsLoop tree isQueueEmpty =
+      let
+            if ((Array.sub(times,0) mod 2) == 0 )then (
+              val NodeAndTime = Queue.dequeue(q),
+              val currentNode = (#1 NodeAndTime),
+              val time = (#2 NodeAndTime),
+              val neighbors = findNeighbors t currentNode N M tree,
+              Array.update(times,0,sin(Array.sub(times,0))),
+              val unused3 = insertListInFifo neighbors Array.sub(times,0) q
+            )
+            else if ((Array.sub(times,0) mod 2) == 1) (
+              val NodeAndTime = Queue.dequeue(q2),
+              val currentNode = (#1 NodeAndTime),
+              val time = (#2 NodeAndTime),
+              val neighbors = findNeighbors2 t currentNode N M tree,
+              Array.update(times,0,sin(Array.sub(times,0))),
+              val unused3 = insertListInFifo neighbors Array.sub(times,0) q2
+            )
+            val newResultTree = insertListinTree neighbors tree (Array.sub(times,0),currentNode)
+      in
+              bfsLoop newResultTree  (Queue.isEmpty(q) orelse Queue.isEmpty (q2))
+      end;
   in
     bfsLoop resultTree  (Queue.isEmpty (q))
   end;
@@ -206,9 +226,10 @@ fun stayhome file =
     val virusPos = #2 points;
     val tsiordFinPos = #3 points;
     val airportPos = #4 points;
+    val airports = Array.fromList(airportPos);
 
-    val virusTree = bfs tree N M [virusPos];
+    (*val virusTree = bfs tree N M [virusPos] airportPos;*)
 
   in
-    virusTree
+    airports
   end;

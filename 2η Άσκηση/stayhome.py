@@ -57,18 +57,23 @@ while (frontier or frontier2):
                 if(((u[0]+1, u[1]) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0]+1, u[1]))
+                if(((u[0], u[1]+1) in airport) and flag==1):
+                    airport.remove((u[0], u[1]+1))                    
                 level[(u[0]+1, u[1])] = i
                 next.append((u[0]+1, u[1]))
             if u[1] > 0 and (u[0], u[1]-1) not in level and map[u[0]][u[1]-1] != 'X': #left
                 if(((u[0], u[1]-1) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0], u[1]-1))
-
+                if(((u[0], u[1]+1) in airport) and flag==1):
+                    airport.remove((u[0], u[1]+1))
                 level[(u[0], u[1]-1)] = i
                 next.append((u[0], u[1]-1))
             if u[1] < M-1 and (u[0], u[1]+1) not in level and map[u[0]][u[1]+1] != 'X': #right
                 if(((u[0], u[1]+1) in airport) and flag==0):
                     flag=1
+                    airport.remove((u[0], u[1]+1))
+                if(((u[0], u[1]+1) in airport) and flag==1):
                     airport.remove((u[0], u[1]+1))
                 level[(u[0], u[1]+1)] = i
                 next.append((u[0], u[1]+1))
@@ -76,6 +81,8 @@ while (frontier or frontier2):
                 if(((u[0]-1, u[1]) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0]-1, u[1]))
+                if(((u[0], u[1]+1) in airport) and flag==1):
+                    airport.remove((u[0], u[1]+1))
                 level[(u[0]-1, u[1])] = i
                 next.append((u[0]-1, u[1]))
         frontier = list(next)

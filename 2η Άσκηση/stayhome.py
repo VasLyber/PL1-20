@@ -41,34 +41,25 @@ while (frontier or frontier2):
     next = []
     next1 = []
     if(i%2==0):
+        if(flag==1 and frontier):
+            air = air + 1
+        if(air==6 and frontier):
+            for k in airport:
+                level[(k[0], k[1])] = i
+                next1.append((k[0], k[1]))
+            frontier2 = list(next1)
+            flag = 0
+            air = 0
+            flag2 = 1
         for u in frontier:
             if u[0] < N-1 and (u[0]+1, u[1]) not in level and map[u[0]+1][u[1]] != 'X': #down
-                if(flag==1):
-                    air = air + 1
-                if(air==6):
-                    for k in airport:
-                        level[(k[0], k[1])] = i
-                        next1.append((k[0], k[1]))
-                    frontier2 = list(next1)
-                    flag = 0
-                    air = 0
-                    flag2 = 1
+
                 if(((u[0]+1, u[1]) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0]+1, u[1]))
                 level[(u[0]+1, u[1])] = i
                 next.append((u[0]+1, u[1]))
             if u[1] > 0 and (u[0], u[1]-1) not in level and map[u[0]][u[1]-1] != 'X': #left
-                if(flag==1):
-                    air = air + 1
-                if(air==6):
-                    for k in airport:
-                        level[(k[0], k[1])] = i
-                        next1.append((k[0], k[1]))
-                    frontier2 = list(next1)
-                    flag = 0
-                    air = 0
-                    flag2 = 1
                 if(((u[0], u[1]-1) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0], u[1]-1))
@@ -76,43 +67,24 @@ while (frontier or frontier2):
                 level[(u[0], u[1]-1)] = i
                 next.append((u[0], u[1]-1))
             if u[1] < M-1 and (u[0], u[1]+1) not in level and map[u[0]][u[1]+1] != 'X': #right
-                if(flag==1):
-                    air = air + 1
-                if(air==6):
-                    for k in airport:
-                        level[(k[0], k[1])] = i
-                        next1.append((k[0], k[1]))
-                    frontier2 = list(next1)
-                    flag = 0
-                    air = 0
-                    flag2 = 1
                 if(((u[0], u[1]+1) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0], u[1]+1))
                 level[(u[0], u[1]+1)] = i
                 next.append((u[0], u[1]+1))
             if u[0] > 0 and (u[0]-1, u[1]) not in level and map[u[0]-1][u[1]] != 'X': #up
-                if(flag==1):
-                    air = air + 1
-                if(air==6):
-                    for k in airport:
-                        level[(k[0], k[1])] = i
-                        next1.append((k[0], k[1]))
-                    frontier2 = list(next1)
-                    flag = 0
-                    air = 0
-                    flag2 = 1
                 if(((u[0]-1, u[1]) in airport) and flag==0):
                     flag=1
                     airport.remove((u[0]-1, u[1]))
                 level[(u[0]-1, u[1])] = i
                 next.append((u[0]-1, u[1]))
         frontier = list(next)
+
         if(frontier):
             i += 1
             continue
         if(flag):
-            i = i + 4 - air
+            i = i + 5 - air
             for k in airport:
                 level[(k[0], k[1])] = i
                 next.append((k[0], k[1]))

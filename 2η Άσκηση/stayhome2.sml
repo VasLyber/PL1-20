@@ -166,20 +166,20 @@ local
             then NONE
             else SOME ((#1(valOf virusCell)))
 
-            val notContinuing = virusTime <> NONE andalso (home <> currentNode)andalso(valOf virusTime)  <= time
+            val notContinuing = virusTime <> NONE andalso (home <> currentNode)andalso (valOf virusTime)  <= time
 
             val neighbors =
-            if notContinuing
+            if (notContinuing)
             then []
             else findNeighbors3 t currentNode N M tree
 
             val unused2 =
-            if notContinuing
+            if (notContinuing)
             then 7
             else insertListInFifo(neighbors,(time+1),q)
 
             val newTree =
-            if notContinuing
+            if (notContinuing)
             then tree
             else insertListinTree neighbors tree (time+1,currentNode)
 
@@ -233,14 +233,18 @@ local
       val flag2 = Array.array(1,0)
       val air = Array.array(1,0)
       val times = Array.array(1,0)
-      val airport = Array.array(4,0)
+      val airport = Array.array(2,0)
 
-      fun findNeighbors t (x,y) N M visited airportPo=
+      fun findNeighbors t (x,y) N M visited time6 =
         let
           val down = (x+1,y)
           val left = (x,y-1)
           val right = (x,y+1)
           val up = (x-1,y)
+          val airport1 = Array.sub(airport,0)
+          val airport2 = Array.sub(airport,1)
+          val airvalue = (airport1,airport2)
+          val newairport = delete(airvalue,airportPos)
 
           val airp = if (( Array.sub(flag,0)=1 ))
           then  Array.update(air,0,sin(Array.sub(air,0)))
@@ -248,103 +252,67 @@ local
 
           val airp = if (( Array.sub(air,0)=6 ))
           then (
-                insertListInFifo(airportPo,(Array.sub(times,0)+1),q2);
+                insertListInFifo(newairport,time6,q2);
                 Array.update(flag,0,0);
                 Array.update(flag2,0,1);
                 Array.update(air,0,0)
           )
           else ();
 
+
           val result1 =
           if ((( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE)))
           then [up]
           else []
 
-          val newairport = if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE) andalso ( Array.sub(flag,0)=0 ) andalso ( Array.sub(flag2,0)=0 ) andalso  exists_in(up,airportPo))
+          val unused4 = if (( (#1 up) >= 0 ) andalso ((valOf (S.find (t,up))) <> #"X")  andalso (S.find(visited,up) = NONE) andalso ( Array.sub(flag,0)=0 ) andalso ( Array.sub(flag2,0)=0 ) andalso  exists_in(up,airportPos))
           then (
             Array.update(airport,0,(#1 up));
             Array.update(airport,1,(#2 up));
-            Array.update(flag,0,1);
-            delete((Array.sub(airport,0),Array.sub(airport,1)),airportPo)
+            Array.update(flag,0,1)
             )
-          else (airportPo);
-
-          val newairport2 = if (exists_in(up,newairport) andalso ( Array.sub(flag2,0)=0 ) andalso ( Array.sub(flag,0)=1 ))
-          then (
-            Array.update(airport,2,(#1 up));
-            Array.update(airport,3,(#2 up));
-            delete((Array.sub(airport,2),Array.sub(airport,3)),newairport)
-            )
-          else(newairport)
+          else ();
 
           val result2 =
           if (( (#2 right) < M ) andalso ((valOf (S.find (t,right))) <> #"X") andalso (S.find(visited,right) = NONE))
           then right::result1
           else result1
 
-          val newairport3 = if (((#2 right) < M  ) andalso ((valOf (S.find (t,right))) <> #"X")  andalso (S.find(visited,right) = NONE) andalso ( Array.sub(flag,0)=0 )  andalso ( Array.sub(flag2,0)=0 ) andalso  exists_in(right,newairport2))
+          val unused4 = if (((#2 right) < M  ) andalso ((valOf (S.find (t,right))) <> #"X")  andalso (S.find(visited,right) = NONE) andalso ( Array.sub(flag,0)=0 )  andalso ( Array.sub(flag2,0)=0 ) andalso  exists_in(right,airportPos))
           then (
             Array.update(airport,0,(#1 right));
             Array.update(airport,1,(#2 right));
-            Array.update(flag,0,1);
-            delete((Array.sub(airport,0),Array.sub(airport,1)),newairport2)
-            )
-          else (newairport2);
-
-          val newairport4 = if ( exists_in(right,newairport3) andalso ( Array.sub(flag2,0)=0 ) andalso ( Array.sub(flag,0)=1 ))
-          then (
-            Array.update(airport,2,(#1 right));
-            Array.update(airport,3,(#2 right));
-            delete((Array.sub(airport,2),Array.sub(airport,3)),newairport3)
-            )
-          else(newairport3)
+            Array.update(flag,0,1)
+          )
+          else ();
 
           val result3 =
           if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE))
           then left::result2
           else result2
 
-          val newairport5 = if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE) andalso ( Array.sub(flag,0)=0 )  andalso ( Array.sub(flag2,0)=0 ) andalso exists_in(left,newairport4))
+          val unused4 = if (( (#2 left) >= 0 ) andalso ((valOf (S.find (t,left))) <> #"X") andalso (S.find(visited,left) = NONE) andalso ( Array.sub(flag,0)=0 )  andalso ( Array.sub(flag2,0)=0 ) andalso exists_in(left,airportPos))
           then(
             Array.update(airport,0,(#1 left));
             Array.update(airport,1,(#2 left));
-            Array.update(flag,0,1);
-            delete((Array.sub(airport,0),Array.sub(airport,1)),newairport4)
+            Array.update(flag,0,1)
             )
-          else (newairport4);
-
-          val newairport6 = if (exists_in(left,newairport5) andalso ( Array.sub(flag2,0)=0 ) andalso ( Array.sub(flag,0)=1 ))
-          then (
-            Array.update(airport,2,(#1 left));
-            Array.update(airport,3,(#2 left));
-            delete((Array.sub(airport,2),Array.sub(airport,3)),newairport5)
-            )
-          else(newairport5)
+          else ();
 
           val result4 =
           if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE))
           then down::result3
           else result3
 
-          val newairport7 = if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE) andalso ( Array.sub(flag,0)=0 ) andalso ( Array.sub(flag2,0)=0 ) andalso   exists_in(down,newairport6))
+          val unused4 = if (( (#1 down) < N ) andalso ((valOf (S.find (t,down))) <> #"X") andalso (S.find(visited,down) = NONE) andalso ( Array.sub(flag,0)=0 ) andalso ( Array.sub(flag2,0)=0 ) andalso   exists_in(down,airportPos))
           then (
             Array.update(airport,0,(#1 down));
             Array.update(airport,1,(#2 down));
-            Array.update(flag,0,1);
-            delete((Array.sub(airport,0),Array.sub(airport,1)),newairport6)
+            Array.update(flag,0,1)
             )
-          else (newairport6);
-
-          val newairport8 = if (exists_in(down,newairport7) andalso ( Array.sub(flag2,0)=0 ) andalso ( Array.sub(flag,0)=1 ))
-          then (
-            Array.update(airport,2,(#1 down));
-            Array.update(airport,3,(#2 down));
-            delete((Array.sub(airport,2),Array.sub(airport,3)),newairport7)
-            )
-          else(newairport7)
-
+         else ();
         in
-          (result4,newairport8)
+          result4
         end;
       fun findNeighbors2 t (x,y) N M visited =
         let
@@ -376,24 +344,31 @@ local
           result4
       end;
 
-      fun bfsLoop(tree,true,airportP) = tree
-            | bfsLoop(tree,isQueueEmpty,airportP) =
+      fun bfsLoop tree true time NodeAndTime3= tree
+            | bfsLoop tree isQueueEmpty time NodeAndTime3=
         let
+            val currentNode3 = (#1 NodeAndTime3);
+            val time3 = (#2 NodeAndTime3)
             val NodeAndTime =
             if (not(Queue.isEmpty(q)))then
               (Queue.head(q))
-            else ((0,0),0)
+            else ((0,0),time3+1)
             val currentNode = (#1 NodeAndTime);
-            val (neighbors,newairport9) = findNeighbors t currentNode N M tree airportP;
+            val time5 = (#2 NodeAndTime)
+            val neighbors = findNeighbors t currentNode N M tree (time5+1);
             val NodeAndTime2 =
             if (not(Queue.isEmpty(q2)))then
             (Queue.head(q2))
-            else ((0,0),0)
+            else ((0,0),time)
             val currentNode2 = (#1 NodeAndTime2);
             val neighbors2 = findNeighbors2 t currentNode2 N M tree;
+            val airport1 = Array.sub(airport,0)
+            val airport2 = Array.sub(airport,1)
+            val airvalue = (airport1,airport2)
+            val newairport = delete(airvalue,airportPos)
 
             val newResultTree =
-              if ((Array.sub(times,0) mod 2) = 0 )then
+              if ((time mod 2) = 0 )then
               ( if (not(Queue.isEmpty(q))) then(
                   Queue.dequeue(q);
                   insertListInFifo(neighbors,((#2 NodeAndTime)+2),q);
@@ -407,8 +382,8 @@ local
                 if (not(Queue.isEmpty(q2))) then(
                   if(Array.sub(flag2,0)=1)then
                   (
-                      Array.update(flag2,0,0);
-                    insertListinTree newairport9 tree ((#2 NodeAndTime2),(Array.sub(airport,0),Array.sub(airport,1)))
+                    Array.update(flag2,0,0);
+                    insertListinTree newairport tree (time,(Array.sub(airport,0),Array.sub(airport,1)))
                     )
                   else(
                   Queue.dequeue(q2);
@@ -421,12 +396,12 @@ local
                 )
               )
         in
-              Array.update(times,0,sin(Array.sub(times,0)));
-              bfsLoop(newResultTree,((Queue.isEmpty(q) andalso Queue.isEmpty(q2)) andalso Array.sub(flag,0)=0),newairport9)
+            (*  Array.update(times,0,sin(Array.sub(times,0)));*)
+              bfsLoop newResultTree ((Queue.isEmpty(q) andalso Queue.isEmpty(q2)) andalso Array.sub(flag,0)=0) (time+1) NodeAndTime
         end;
 
   in
-    bfsLoop(resultTree,((Queue.isEmpty(q) andalso Queue.isEmpty(q2)) andalso Array.sub(flag,0)=0),airportPos)
+    bfsLoop resultTree ((Queue.isEmpty(q) andalso Queue.isEmpty(q2)) andalso Array.sub(flag,0)=0) 0 ((0,0),0)
   end;
 in
   fun stayhome file =
@@ -448,7 +423,7 @@ in
       val node = #1 result
       val time = #2 result
 
-      val path = if(time>0)then getPath node tsiordTree []
+      val path = if (time)>0 then getPath node tsiordTree []
         else []
 
       val pathInString =
@@ -460,14 +435,12 @@ in
         if (time)<0
         then ""
         else Int.toString(time)
-    val ok = S.listItems(virusTree)
-    val virusCell = S.find (virusTree,tsiordPos)
+      val ok = S.listItems(virusTree)
     in
-      if(time>0)then(
+      (*if(time>=0)then(
         print (timeInString ^ "\n" ^ pathInString ^ "\n")
       )
-      else print("IMPOSSIBLE \n")
-
-      virusCell
+      else print("IMPOSSIBLE \n")*)
+      ok
   end;
 end;

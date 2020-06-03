@@ -166,7 +166,7 @@ local
             then NONE
             else SOME ((#1(valOf virusCell)))
 
-            val notContinuing = virusTime <> NONE andalso (home <> currentNode)andalso(valOf virusTime)  <= time
+            val notContinuing = virusTime <> NONE andalso(valOf virusTime)  <= time
 
             val neighbors =
             if notContinuing
@@ -183,15 +183,11 @@ local
             then tree
             else insertListinTree neighbors tree (time+1,currentNode)
 
-            val newResult =
-            if (notContinuing)
-            then ((home,~1))
-            else ((home,time))
-
+            val newResult = if(notContinuing orelse ((Queue.isEmpty(q)) andalso home <>currentNode))
+              then((home,~1))
+              else((home,time))
           in
-            if(home = currentNode)then
-            (newTree,newResult)
-            else bfsLoop newTree (Queue.isEmpty (q)) newResult
+            bfsLoop newTree (Queue.isEmpty(q) orelse home=currentNode) newResult
       end;
   in
     bfsLoop initialTree (Queue.isEmpty (q)) ((N,M),~2)
@@ -443,6 +439,6 @@ in
         print (timeInString ^ "\n" ^ pathInString ^ "\n")
       )
       else print("IMPOSSIBLE \n")
-      
+
   end;
 end;

@@ -10,7 +10,13 @@ read_lines(Stream, N, Numbers) :-
               read_lines(Stream, Nm1, RestNumbers),
               Numbers = [Number | RestNumbers]).
 
-
+read_line(Stream, List) :-
+    read_line_to_codes(Stream, Line),
+    ( Line = [] -> List = []
+    ; atom_codes(A, Line),
+      atomic_list_concat(As, ' ', A),
+      maplist(atom_number, As, List)
+    ).
 
 dec2bin(0,[0]).
 dec2bin(1,[1]).

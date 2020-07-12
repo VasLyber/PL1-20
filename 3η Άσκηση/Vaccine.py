@@ -54,7 +54,7 @@ def check_completion(queue_input, queue_output):
             del temp_queue_output[i]
         else:
             i += 1
-    
+
     if len(temp_queue_output) == len(set(temp_queue_output)):  # check for duplicates in the temporary queue
         if not queue_input:
             return 2  # vaccine string is completed

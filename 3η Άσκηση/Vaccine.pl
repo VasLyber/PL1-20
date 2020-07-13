@@ -13,5 +13,42 @@ read_lines(Stream, N, Chars) :-
               read_lines(Stream, Nm1, RestChars),
               Chars = [L | RestChars]).
 
+initializecomplement(Output,Sofar,Answer):-
+  string_concat('','c',Sofar).
+
+addcomplementletter(Answer,AN):-
+  An = Answer,
+  string_concat(Answer,'c',AN).
+
+initializepushletter(Answer):-
+  string_concat('','p',Answer).
+addpushletter(Answer,AN):-
+  An = Answer,
+  string_concat(Answer,'p',AN).
+
+initializereverseletter(Answer):-
+  string_concat('','r',Answer).
+addpushletter(Answer,AN):-
+  An = Answer,
+  string_concat(Answer,'r',AN).
+
+testlist([]).
+testlist([H|T],Answer,AN) :-
+  initializecomplementletter(Answer),
+  addcomplementletter(Answer,AN).
+
+testlists(Ns, Answers,[H|T]) :-
+  (
+    Ns == 0 -> Answers = []
+  ; Ns == 1 -> testlist(H,Answer,AN),
+               Ns1 is Ns-1,
+               testlists(Ns1, RestAnswers,[5,6]),
+               Answers = [AN | RestAnswers]
+  ; Ns > 1 -> testlist(H,Answer,AN),
+              Ns1 is Ns-1,
+              testlists(Ns1, RestAnswers,T),
+              Answers = [AN | RestAnswers]).
+
 vaccine(File,Answers) :-
-  read_input(File, Ns, Answers).
+  read_input(File, Ns, Chars),
+  testlists(Ns,Answers,Chars).

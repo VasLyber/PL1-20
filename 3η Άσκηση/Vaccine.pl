@@ -13,8 +13,8 @@ read_lines(Stream, N, Chars) :-
               read_lines(Stream, Nm1, RestChars),
               Chars = [L | RestChars]).
 
-initializecomplement(Output,Sofar,Answer):-
-  string_concat('','c',Sofar).
+initializecomplementletter(Answer):-
+  string_concat('','c',Answer).
 
 addcomplementletter(Answer,AN):-
   An = Answer,
@@ -32,8 +32,31 @@ addpushletter(Answer,AN):-
   An = Answer,
   string_concat(Answer,'r',AN).
 
+initialize()
+
+initializes(Input_queues, Output_queques, Strings, Ns):-
+  (
+    Ns == 0 -> Input_queues = [],
+               Output_queques = [],
+               Strings = []
+  ; Ns == 1 -> initialize(Input_queue,Output_queque,String),
+               Ns1 is Ns-1,
+               initializes(Resinput_queues, Resoutput_queques, RestStrings,[5,6]),
+               Input_queues = [Input_queue | Resinput_queues],
+               Output_queques = [Output_queque|Resoutput_queques],
+               Strings = [String|RestStrings]
+  ; Ns > 1 -> initialize(Input_queue,Output_queque,String),
+              Ns1 is Ns-1,
+              initializes(Ns1, RestAnswers,T),
+              Input_queues = [Input_queue | Resinput_queues],
+              Output_queques = [Output_queque|Resoutput_queques],
+              Strings = [String|RestStrings]
+  ).
+
+
 testlist([]).
 testlist([H|T],Answer,AN) :-
+  initializes(H,[],Strings,),
   initializecomplementletter(Answer),
   addcomplementletter(Answer,AN).
 

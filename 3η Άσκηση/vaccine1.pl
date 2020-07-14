@@ -56,7 +56,7 @@ safe(NewState2):-
     remove_duplicates(NewState2,NS2),
     all_diff(NS2).
 
-solution([],NewState2,[]):-safe(NewState2).
+solution([],NewState2,[]):-safe(NewState2),writeln(NewState2).
 solution(State1, State2, [Move | Moves]) :-
   action(State1, State2, Move, NewState1, NewState2),
   safe(NewState2),
@@ -70,5 +70,4 @@ solve(File) :-
   reverse(H,O,[]),
   length(Moves, _N),
   solution(O,[],Moves),
-  string_chars(Str,Moves),
-  write(Str), !.
+  write(Moves), nl.

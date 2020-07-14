@@ -27,7 +27,7 @@ read_lines(Stream, N, Chars) :-
               reverse(H,O,[]),
               Nm1 is N-1,
               read_lines(Stream, Nm1, RestChars),
-              Chars = [L | RestChars]).
+              Chars = [O | RestChars]).
 complement([],Z,Z).
 complement([H|T],Z,Acc) :-
   (
@@ -86,13 +86,13 @@ solutions(Ns, Answers,[H|T]) :-
                Ns1 is Ns-1,
                string_chars(Str,Moves),
                solutions(Ns1, RestAnswers,[5,6]),
-               Answers = [Moves | RestAnswers]
+               Answers = [Str | RestAnswers]
   ; Ns > 1 -> length(Moves, _N),
               solution(H,[],Moves),!,
               string_chars(Str,Moves),
               Ns1 is Ns-1,
               solutions(Ns1, RestAnswers,T),
-              Answers = [Moves | RestAnswers]).
+              Answers = [Str | RestAnswers]).
 plin([H|T],[H1|T1],Z):-Z is H1-H.
 vaccine(File,Answers) :-
   statistics(runtime,A),

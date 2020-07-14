@@ -72,7 +72,7 @@ safe(NewState2):-
     remove_duplicates(NewState2,NS2),
     all_diff(NS2).
 
-solution([],NewState2,[]):-safe(NewState2).
+solution([],NewState2,[]):-safe(NewState2),!.
 solution(State1, State2, [Move | Moves]) :-
   action(State1, State2, Move, NewState1, NewState2),
   safe(NewState2),
@@ -82,20 +82,22 @@ solutions(Ns, Answers,[H|T]) :-
   (
     Ns == 0 -> Answers = []
   ; Ns == 1 -> length(Moves, _N),
-               solution(H,[],Moves),
-               !,
+               solution(H,[],Moves),!,
                Ns1 is Ns-1,
-               solutions(Ns1, RestAnswers,[5,6]),
                string_chars(Str,Moves),
-               Answers = [Str | RestAnswers]
+               solutions(Ns1, RestAnswers,[5,6]),
+               Answers = [Moves | RestAnswers]
   ; Ns > 1 -> length(Moves, _N),
-              solution(H,[],Moves),
-              !,
+              solution(H,[],Moves),!,
+              string_chars(Str,Moves),
               Ns1 is Ns-1,
               solutions(Ns1, RestAnswers,T),
-              string_chars(Str,Moves),
-              Answers = [Str | RestAnswers]).
-
+              Answers = [Moves | RestAnswers]).
+plin([H|T],[H1|T1],Z):-Z is H1-H.
 vaccine(File,Answers) :-
+  statistics(runtime,A),
   read_input(File, Ns, Chars),
-  solutions(Ns,Answers,Chars).
+  solutions(Ns,Answers,Chars),
+  statistics(runtime,B),
+  plin(A,B,C),
+  writeln(C).

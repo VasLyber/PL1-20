@@ -1,13 +1,13 @@
 reverse([],Z,Z).
 reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 
-complement([],Z,Y):- reverse(Y,Z,[]).
+complement([],Z,Z).
 complement([H|T],Z,Acc) :-
   (
-    H == -25 ->  complement(T,Z,[-29|Acc])
-  ; H == -29 ->  complement(T,Z,[-25|Acc])
-  ; H == -31 ->  complement(T,Z,[-11|Acc])
-  ; H == -11 ->  complement(T,Z,[-31|Acc])
+    H == 85 ->  complement(T,Z,[65|Acc])
+  ; H == 65 ->  complement(T,Z,[85|Acc])
+  ; H == 71 ->  complement(T,Z,[67|Acc])
+  ; H == 67 ->  complement(T,Z,[71|Acc])
   ).
 
 sum_atoms([], []).
@@ -19,7 +19,7 @@ sum_atoms([H|T], [HeadSum|RT]) :-
 sum_letters([], 0).
 sum_letters([H|T], Res) :-
   sum_letters(T, TailSum),
-  Res is (H-96) + TailSum.
+  Res is (H) + TailSum.
 
 copy(L,R) :- accCp(L,R).
 accCp([],[]).
@@ -32,35 +32,42 @@ push([H|T],NewState1,State2,NewState2):-
 
 action(State1,State2,c,NewState1,NewState2):-
   copy(State2,NewState2),
-  complement(State1,NewState1,[]).
+  complement(State1,NewState,[]),
+  reverse(NewState,NewState1,[]).
+action(State1,State2,p,NewState1,NewState2):-
+  push(State1,NewState1,State2,NewState2).
 action(State1,State2,r,NewState1,NewState2):-
   copy(State1,NewState1),
   reverse(State2,NewState2,[]).
-action(State1,State2,p,NewState1,NewState2):-
-  push(State1,NewState1,State2,NewState2).
 
-all_diff(L) :- safe([],K1),\+ (append(_,[X|R],L), memberchk(X,R)).
-safe([],K).
-safe([H],K):-
-  K1 = [H|K],
-  all_diff(K1).
-safe([H1,H2|T],K):-
-  (
-    H1 \= H2 -> K1 = [H1|K], safe([H2|T],K1)
-  ; safe([H2|T],K)
-  ).
+all_diff(L) :- \+ (append(_,[X|R],L), memberchk(X,R)).
+remove_duplicates([],[]).
+remove_duplicates([H],[H]).
+remove_duplicates([H , P | T], List) :-
+     (H==P),
+     remove_duplicates([P|T], List).
 
-solution([],[],[]).
-solution(State, Config, [Move | Moves]) :-
-  action(State, Config, Move, NextState, NextConfig),
-  safe(NextConfig,[]),
-  solution(NextConfig,NextState, Moves).
+remove_duplicates([H ,P| T], [H|T1]) :-
+      \+(H==P),
+      remove_duplicates( [P|T], T1).
+
+safe([]).
+safe(NewState2):-
+    remove_duplicates(NewState2,NS2),
+    all_diff(NS2).
+
+solution([],NewState2,[]):-safe(NewState2),writeln(NewState2).
+solution(State1, State2, [Move | Moves]) :-
+  action(State1, State2, Move, NewState1, NewState2),
+  safe(NewState2),
+  solution(NewState1,NewState2, Moves).
 
 solve(File) :-
   open(File, read, Stream),
   read_line_to_string(Stream, Char),
   string_chars(Char,L),
   sum_atoms(L,H),
+  reverse(H,O,[]),
   length(Moves, _N),
-  solution(H,Config,Moves),
+  solution(O,[],Moves),
   write(Moves), nl.

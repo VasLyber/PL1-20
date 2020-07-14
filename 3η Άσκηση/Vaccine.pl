@@ -32,7 +32,7 @@ addpushletter(Answer,AN):-
   An = Answer,
   string_concat(Answer,'r',AN).
 
-initialize()
+initialize(Input_queue,Output_queque,String)
 
 initializes(Input_queues, Output_queques, Strings, Ns):-
   (
@@ -52,7 +52,6 @@ initializes(Input_queues, Output_queques, Strings, Ns):-
               Output_queques = [Output_queque|Resoutput_queques],
               Strings = [String|RestStrings]
   ).
-
 
 testlist([]).
 testlist([H|T],Answer,AN) :-

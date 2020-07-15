@@ -42,8 +42,7 @@ accCp([],[]).
 accCp([H|T1],[H|T2]) :- accCp(T1,T2).
 
 push([H|T],NewState1,State2,NewState2):-
-  copy(State2,NState2),
-  append([H],NState2,NewState2),
+  append([H],State2,NewState2),
   copy(T,NewState1).
 
 action(State1,State2,c,NewState1,NewState2):-
@@ -72,7 +71,7 @@ safe(NewState2):-
     remove_duplicates(NewState2,NS2),
     all_diff(NS2).
 
-solution([],NewState2,[]):-safe(NewState2),!.
+solution([],NewState2,[]).
 solution(State1, State2, [Move | Moves]) :-
   action(State1, State2, Move, NewState1, NewState2),
   safe(NewState2),

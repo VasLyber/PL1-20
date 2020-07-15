@@ -36,13 +36,13 @@ replace(O, R, W, U, [W|T], [U|T2]) :- replace(O, R, W, U, T, T2).
 replace(O, R, W, U, [U|T], [W|T2]) :- replace(O, R, W, U, T, T2).
 
 
-action(situation(State1,[]),c,situation(State1,NewState2)):-fail.
+action(situation(State1,[]),c,situation(State1,_)):-fail.
 action(situation(State1,[H|T]),c,situation(NewState1,[H|T])):-
   replace(85,65,71,67,State1,NewState1).
 
 action(situation([H|T],State2),p,situation(T,[H|State2])):-safe([H|State2]).
-action(situation(State1,[]),r,situation(State1,NewState2)):-fail.
-action(situation(State1,[H]),r,situation(State1,NewState2)):-fail.
+action(situation(State1,[]),r,situation(State1,_)):-fail.
+action(situation(State1,[H]),r,situation(State1,_)):-fail.
 action(situation(State1,[H|T]),r,situation(State1,NewState2)):-
   reverse([H|T],NewState2,[]).
 
@@ -56,7 +56,7 @@ safe([H ,P| T]) :-
       not(memberchk(H,T)),
       safe([P|T]).
 
-solution(situation([],NewState2),[],_).
+solution(situation([],_),[],_).
 solution(situation(State1,State2), [Move | Moves],Seen) :-
   action(situation(State1,State2), Move, situation(NewState1, NewState2)),not(member(situation(NewState1,NewState2),Seen)),
   solution(situation(NewState1,NewState2), Moves,[situation(NewState1,NewState2)|Seen]).
@@ -76,7 +76,7 @@ solutions(Ns, Answers,[H|T]) :-
               Ns1 is Ns-1,
               solutions(Ns1, RestAnswers,T),
               Answers = [Str | RestAnswers]).
-plin([H|T],[H1|T1],Z):-Z is H1-H.
+plin([H|_],[H1|_],Z):-Z is H1-H.
 vaccine(File,Answers) :-
   statistics(runtime,A),
   read_input(File, Ns, Chars),

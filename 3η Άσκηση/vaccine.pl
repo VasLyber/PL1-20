@@ -36,15 +36,20 @@ replace(O, R, W, U, [W|T], [U|T2]) :- replace(O, R, W, U, T, T2).
 replace(O, R, W, U, [U|T], [W|T2]) :- replace(O, R, W, U, T, T2).
 
 
-action(situation(State1,[]),c,situation(State1,_)):-fail.
-action(situation(State1,[H|T]),c,situation(NewState1,[H|T])):-
-  replace(85,65,71,67,State1,NewState1).
 
-action(situation([H|T],State2),p,situation(T,[H|State2])):-safe([H|State2]).
-action(situation(State1,[]),r,situation(State1,_)):-fail.
-action(situation(State1,[H]),r,situation(State1,_)):-fail.
-action(situation(State1,[H|T]),r,situation(State1,NewState2)):-
-  reverse([H|T],NewState2,[]).
+action(situation(State1,[]),c,situation(State1,_),Moves):-fail.
+action(situation(State1,[H|T]),c,situation(NewState1,[H|T]),[H1|T1]):-
+ (H1==c,fail
+ ;replace(85,65,71,67,State1,NewState1)).
+
+
+action(situation([H|T],State2),p,situation(T,[H|State2]),Moves):-safe([H|State2]).
+action(situation(State1,[]),r,situation(State1,_),Moves):-fail.
+action(situation(State1,[H]),r,situation(State1,_),Moves):-fail.
+action(situation(State1,[H|T]),r,situation(State1,NewState2),[H1|T1]):-
+  (H1==r,fail
+  ;reverse([H|T],NewState2,[])).
+
 
 safe([]).
 safe([H]).
@@ -58,24 +63,29 @@ safe([H ,P| T]) :-
 
 solution(situation([],_),[],_).
 solution(situation(State1,State2), [Move | Moves],Seen) :-
-  action(situation(State1,State2), Move, situation(NewState1, NewState2)),not(member(situation(NewState1,NewState2),Seen)),
+  action(situation(State1,State2), Move, situation(NewState1, NewState2),Moves),not(member(situation(NewState1,NewState2),Seen)),
   solution(situation(NewState1,NewState2), Moves,[situation(NewState1,NewState2)|Seen]).
 
-solutions(Ns, Answers,[H|T]) :-
-  (
-    Ns == 0 -> Answers = []
-  ; Ns == 1 -> length(Moves, _N),
-               once(solution(situation(H,[]),Moves,[])),
-               Ns1 is Ns-1,
-               string_chars(Str,Moves),
-               solutions(Ns1, RestAnswers,[5,6]),
-               Answers = [Str | RestAnswers]
-  ; Ns > 1 -> length(Moves, _N),
-              once(solution(situation(H,[]),Moves,[])),
-              string_chars(Str,Moves),
-              Ns1 is Ns-1,
-              solutions(Ns1, RestAnswers,T),
-              Answers = [Str | RestAnswers]).
+  solutions(Ns, Answers,[H|T]) :-
+    (
+      Ns == 0 -> Answers = []
+    ; Ns == 1 -> length(H, I),
+                 length(Moves, _N),
+                 (_N>101,_N<I->!
+               ; once(solution(situation(H,[]),Moves,[]))),
+                 Ns1 is Ns-1,
+                 string_chars(Str,Moves),
+                 solutions(Ns1, RestAnswers,[5,6]),
+                 Answers = [Str | RestAnswers]
+    ; Ns > 1 ->  length(H, I),
+                 length(Moves, _N),
+                 (_N>100 ,_N<I-> !
+              ;  once(solution(situation(H,[]),Moves,[]))),
+                 string_chars(Str,Moves),
+                 Ns1 is Ns-1,
+                 solutions(Ns1, RestAnswers,T),
+                 Answers = [Str | RestAnswers]).
+
 plin([H|_],[H1|_],Z):-Z is H1-H.
 vaccine(File,Answers) :-
   statistics(runtime,A),

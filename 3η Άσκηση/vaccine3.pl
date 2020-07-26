@@ -1,6 +1,3 @@
-reverse([],Z,Z).
-reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
-
 sum_atoms([], []).
 sum_atoms([H|T], [HeadSum|RT]) :-
   atom_codes(H, Codes),
@@ -24,7 +21,7 @@ read_lines(Stream, N, Chars) :-
   ; N > 0  -> read_line_to_string(Stream, Char),
               string_chars(Char,L),
               sum_atoms(L,H),
-              reverse(H,O,[]),
+              reverse(H,O),
               Nm1 is N-1,
               read_lines(Stream, Nm1, RestChars),
               Chars = [O | RestChars]).
@@ -43,6 +40,9 @@ action(situation(State1,[H|T]),c,situation(NewState1,[H|T]),[H1|T1]):-
  ;replace(85,65,71,67,State1,NewState1)).
 
 action(situation([H|T],State2),p,situation(T,[H|State2]),Moves):-safe([H|State2]).
+action(situation([H|T],[]),p,situation(T,H),Moves).
+action(situation([H|T],[H|P]),p,situation(T,[H|P]),Moves).
+
 
 action(situation(State1,[]),r,situation(State1,_),Moves):-fail.
 action(situation(State1,[H]),r,situation(State1,_),Moves):-fail.
@@ -50,19 +50,14 @@ action(situation([H|_],[H|_]),r,situation(_,_),_):-fail.
 action(situation(State1,[H|T]),r,situation(State1,NewState2),[H1|T1]):-
   (H1==r,fail
   ;H1==c,fail
-  ;reverse([H|T],NewState2,[])).
+  ;reverse([H|T],NewState2)).
 
 safe([]).
 safe([H]).
-safe([H , P | T]) :-
-     (H==P),
-     safe([P|T]).
 safe([H ,P| T]) :-
       not((H==P)),
       not(memberchk(H,T)),
       safe([P|T]).
-
-member_queue(Element,Queue):-member(Element, Queue).
 
 empty_set([]).
 
@@ -72,16 +67,11 @@ remove_from_queue(E, [E|T], T).
 
 empty_queue([]).
 
-member_set(E, S) :- member(E, S).
-
 add_to_queue(E, [], [E]).
 add_to_queue(E, [H|T], [H|Tnew]) :- add_to_queue(E, T, Tnew).
 
 add_to_set(X, S, S) :- member(X, S), !.
 add_to_set(X, S, [X|S]).
-
-path(Open,_,_,_) :- empty_queue(Open),
-                  write('graph searched, no solution found').
 
 path(Open, Closed, Goal,Moves) :-
     remove_from_queue(Next_record, Open, _),
@@ -89,14 +79,14 @@ path(Open, Closed, Goal,Moves) :-
     State = Goal,
     getmove(Next_record, Closed,Moves).
 
-path(Open, Closed, Goal,Moves2,T) :-
+path(Open, Closed, Goal,Moves2) :-
     remove_from_queue(Next_record, Open, Rest_of_open),
-    (bagof(Child, moves(Next_record, Open, Closed, Child,T), Children);Children = []),
+    (bagof(Child, moves(Next_record, Open, Closed, Child), Children);Children = []),
     add_list_to_queue(Children, Rest_of_open, New_open),
     add_to_set(Next_record, Closed, New_closed),
     path(New_open, New_closed, Goal,Moves2).
 
-moves(State_record, Open, Closed, Child_record,T) :-
+moves(State_record, Open, Closed, Child_record) :-
     state_record(State, _, _,State_record),
     action(State,Move,Next,_),
     state_record(Next, _,_, Test),
@@ -119,11 +109,10 @@ add_list_to_queue([H|T], Queue, New_queue) :-
 
 solution_start(Start, Goal,Moves3) :-
   empty_queue(Empty_open),
-  empty_nb_hashtbl(T),
   state_record(Start, nil,nil, State),
   add_to_queue(State, Empty_open, Open),
   empty_set(Closed),
-  path(Open, Closed, Goal,Moves3,T).
+  path(Open, Closed, Goal,Moves3).
 
 solutions(Ns, Answers,[H|T]) :-
   (
@@ -133,7 +122,7 @@ solutions(Ns, Answers,[H|T]) :-
                (_N>101,_N<I->!
              ; once(solution_start(situation(H,[]),situation([],_),Moves4))),
                Ns1 is Ns-1,
-               reverse(Moves4,Moves5,[]),
+               reverse(Moves4,Moves5),
                string_chars(Str,Moves5),
                solutions(Ns1, RestAnswers,[5,6]),
                Answers = [Str | RestAnswers]
@@ -141,7 +130,7 @@ solutions(Ns, Answers,[H|T]) :-
                length(Moves, _N),
                (_N>100 ,_N<I-> !
             ;  once(solution_start(situation(H,[]),situation([],_),Moves4))),
-               reverse(Moves4,Moves5,[]),
+               reverse(Moves4,Moves5),
                string_chars(Str,Moves5),
                Ns1 is Ns-1,
                solutions(Ns1, RestAnswers,T),

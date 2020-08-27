@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
 import java.lang.*;
-import java.awt.Point;
 
 public class Vaccine {
     public static void main(String[] args) throws Exception {
@@ -19,7 +18,7 @@ public class Vaccine {
         List<Character> input_stack = new ArrayList<Character>();
         List<Character> input_stack_complement = new ArrayList<Character>();
         int input_stack_length;
-        char[] actions = {'c', 'p', 'r'};
+        //char[] actions = {'c', 'p', 'r'};
 
         while ((line = buffer.readLine()) != null) {
             lines.add(line);
@@ -27,17 +26,6 @@ public class Vaccine {
         buffer.close();
 
         // Telos diavasmata
-
-//        //gia print ta lines
-//        String[] itemsArray = new String[lines.size()];
-//        itemsArray = lines.toArray(itemsArray);
-//
-//        for(String s : itemsArray)
-//            System.out.println(s);
-//
-//        System.out.println(N);
-
-        //lego
 
         for (int i = 0; i < N; i ++) {
 
@@ -88,16 +76,16 @@ public class Vaccine {
         List<Character> empty = new ArrayList<Character>();
         State init = new State(empty,"", false, false, false, 1, input_s, input_s_c, input_s_l);
         State init_p = init.accessible_initial();
-        List<State> akses;
+        List<State> akses = new ArrayList<State>();
 
         //Deque<State> Q = new ArrayDeque<State>(); //https://www.geeksforgeeks.org/deque-interface-java-example/
-        // pws kanw to Q.deque([init_p]));
+        
         List<State> Q = new ArrayList<State>();
         Q.add(init_p);
 
 
         boolean secondary_flag = true;
-        boolean done = false;
+        //boolean done = false;
         boolean append_flag;
         State s;
         State t;
@@ -112,8 +100,8 @@ public class Vaccine {
                 secondary_flag = !secondary_flag; //thanks
                 akses = s.accessible_secondary();
                 //t init
-                for (int u = 0; u < 2; u++) {
-                    t = akses.get(u);
+                for (int k = 0; k < akses.size(); k++) {
+                    t = akses.get(k);
                     if (t.check_action() == 2) {
                         return t;
                     } else if ( t.check_action() == 1) {
@@ -125,10 +113,10 @@ public class Vaccine {
                         }
                     }
                 }
-                Q.addAll(internal_Q);//edw apendaki tzoriko
+                Q.addAll(internal_Q);
             } else {
                 akses = s.accessible();
-                for (int u = 0; u < 3; u++) {
+                for (int u = 0; u < akses.size(); u++) {
                     t = akses.get(u);
                     if (t.check_action() == 2) {
                         return t;
@@ -151,7 +139,7 @@ public class Vaccine {
                         }
                     }
                 }
-                Q.addAll(internal_Q); //apendaki tzoriko
+                Q.addAll(internal_Q); 
             }
 
 

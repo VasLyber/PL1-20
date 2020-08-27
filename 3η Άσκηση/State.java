@@ -79,25 +79,25 @@ public class State {
         this.reverse_flag = !this.reverse_flag;
     }
 
-    //accesses kai -1
+    
     public void push(){
 
-        Character last_base;// = null; //den xerw an xreiazete alla evgaze error stin if katw
+        Character last_base;
         if (!this.complement_flag) {
             last_base = input_stack.get(input_stack.size() - this.input_stack_index);
 
         } else {
             last_base = input_stack_complement.get(input_stack_complement.size() - this.input_stack_index);
-            //last_base = input_stack[-this.input_stack_index];
+            
         }
 
         this.input_stack_index += 1;
 
         if (!this.reverse_flag) {
             if (this.out_stack.size() > 0) {
-                //print("In push, stack last is: "+str(stack_output[-1])+", last base is: "+str(last_base))
+                
                 if (this.out_stack.get(this.out_stack.size() - 1) != last_base) {
-                    //this.out_stack[-1] != last_base
+                    
                     this.out_stack.add(last_base);
                 } else {
                     this.unchanged_after_push_flag = true;
@@ -107,7 +107,7 @@ public class State {
             }
         } else {
             if (this.out_stack.size() > 0 ) {
-                // print("In push, stack last is: "+str(stack_output[-1])+", last base is: "+str(last_base))
+                
                 if (this.out_stack.get(0) != last_base) {
                     this.out_stack.add(0, last_base);
                 } else {
@@ -120,7 +120,7 @@ public class State {
 
     }
 
-    //edw ti ginete exei return self stin py
+    
     public void take_action(Character action){
         if (action.equals('c')){
             this.complement();
@@ -181,7 +181,7 @@ public class State {
         return acc_states;
     }
 
-    //pws na kanw access tis metavlites tis vaccine
+    
     public int check_action() {
 
         Set<Character> stackset = new HashSet<>(this.out_stack);
@@ -201,9 +201,6 @@ public class State {
     }
 
 
-//    public String get_vaccine_string(){
-//        return this.vaccine_string;
-//    }
 
     public boolean isUnchanged_after_push_flag() {
         return unchanged_after_push_flag;

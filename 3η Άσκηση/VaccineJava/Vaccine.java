@@ -4,6 +4,8 @@ import java.util.*;
 import java.lang.*;
 
 public class Vaccine {
+    public static List<Character> input_stack = new ArrayList<Character>();
+    public static List<Character> input_stack_complement = new ArrayList<Character>();
     public static void main(String[] args) throws Exception {
 
         //read
@@ -15,8 +17,8 @@ public class Vaccine {
         int N = Integer.parseInt(k);
 
         String input_string;
-        List<Character> input_stack = new ArrayList<Character>();
-        List<Character> input_stack_complement = new ArrayList<Character>();
+        String input_stack;
+        String input_stack_complement;
         int input_stack_length;
         //char[] actions = {'c', 'p', 'r'};
 
@@ -32,7 +34,7 @@ public class Vaccine {
             input_string = lines.get(i);
             input_stack = string_to_stack(input_string);
             input_stack_complement = complement(input_stack);
-            input_stack_length = input_stack.size();
+            input_stack_length = input_stack.length();
 
             State t = callback(input_stack, input_stack_complement, input_stack_length);
 
@@ -43,28 +45,31 @@ public class Vaccine {
 
     }
 
-    private static List<Character> string_to_stack(String line){
-        List<Character> stack = new ArrayList<Character>();
+    private static String string_to_stack(String line){
+        String stack = new String();
 
         for (int i = 0; i < line.length(); i++){
-            stack.add(line.charAt(i));
+            stack += line.charAt(i);
         }
 
         return stack;
 
     }
 
-    private static List<Character> complement(List<Character> stack) {
-        List<Character> stack_complement = new ArrayList<Character>();
-        for (Character character : stack) {
+    private static String complement(String stack) {
+        String stack_complement = new String();
+        for (int i = 0; i < stack.length(); i++){
+            Character character = stack.charAt(i);
+
+        // for (char character : chars) {
             if (character.equals('G')) {
-                stack_complement.add('C');
+                stack_complement += 'C';
             } else if (character.equals('C')) {
-                stack_complement.add('G');
+                stack_complement += 'G';
             } else if (character.equals('A')) {
-                stack_complement.add('U');
+                stack_complement += 'U';
             } else {
-                stack_complement.add('A');
+                stack_complement += 'A';
             }
         }
 
@@ -72,9 +77,9 @@ public class Vaccine {
 
     }
 
-    private static State callback(List<Character> input_s, List<Character> input_s_c, int input_s_l) {
-        List<Character> empty = new ArrayList<Character>();
-        State init = new State(empty,"", false, false, false, 1, input_s, input_s_c, input_s_l);
+    private static State callback(String input_s, String input_s_c, int input_s_l) {
+        // List<Character> empty = new ArrayList<Character>();
+        State init = new State("","", false, false, false, 1, input_s, input_s_c, input_s_l);
         State init_p = init.accessible_initial();
         List<State> akses = new ArrayList<State>();
 
@@ -93,7 +98,7 @@ public class Vaccine {
 
         while (!(Q.isEmpty())) { //check null list
 
-            s = Q.removeFirst(); //163
+            s = Q.remove(); //163
             //List<State> internal_Q = new ArrayList<State>();
             Deque<State> internal_Q = new ArrayDeque<State>();
             if (secondary_flag) {
@@ -148,6 +153,9 @@ public class Vaccine {
         }
 
         State errorpog = new State("error");
+
         return errorpog;
+
     }
+
 }        

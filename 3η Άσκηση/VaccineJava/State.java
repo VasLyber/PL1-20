@@ -3,19 +3,19 @@ import java.util.*;
 
 public class State {
 
-    private List<Character> out_stack; //= new ArrayList<Character>();
+    private String out_stack; //= new ArrayList<Character>();
     private String vaccine_string;
     private boolean complement_flag;
     private boolean reverse_flag;
     private boolean unchanged_after_push_flag;
     private int input_stack_index;
     private char[] actions = {'c', 'p', 'r'};
-    private List<Character> input_stack;// = new ArrayList<Character>();
-    private List<Character> input_stack_complement;// = new ArrayList<Character>();
+    private String input_stack;// = new ArrayList<Character>();
+    private String input_stack_complement;// = new ArrayList<Character>();
     private int input_stack_length;
 
 
-    public State(List<Character> out_stack, String vaccine_string, boolean complement_flag, boolean reverse_flag, boolean unchanged_after_push_flag, int input_stack_index, List<Character> input_stack, List<Character> input_stack_complement, int input_stack_length) {
+    public State(String out_stack, String vaccine_string, boolean complement_flag, boolean reverse_flag, boolean unchanged_after_push_flag, int input_stack_index, String input_stack, String input_stack_complement, int input_stack_length) {
         this.out_stack = out_stack;
         this.vaccine_string = vaccine_string;
         this.complement_flag = complement_flag;
@@ -33,16 +33,13 @@ public class State {
 
     public State deep_copy(){
 
-        List<Character> out_stack_new = new ArrayList<>();
+        String out_stack_new = this.out_stack;
         String vaccine_string_new;
         boolean complement_flag_new;
         boolean reverse_flag_new;
         boolean unchanged_after_push_flag_new;
         int input_stack_index_new;
 
-        for (int j = 0; j < this.out_stack.size(); j++) {
-            out_stack_new.add(j, this.out_stack.get(j));
-        }
         vaccine_string_new = this.vaccine_string;
         complement_flag_new = this.complement_flag;
         reverse_flag_new = this.reverse_flag;
@@ -54,7 +51,7 @@ public class State {
 
     public State deep_copy_reverse_complement(){
 
-        List<Character> out_stack_new ;//= new ArrayList<Character>();
+        String out_stack_new ;//= new ArrayList<Character>();
         String vaccine_string_new;
         boolean complement_flag_new;
         boolean reverse_flag_new;
@@ -84,37 +81,37 @@ public class State {
 
         Character last_base;
         if (!this.complement_flag) {
-            last_base = input_stack.get(input_stack.size() - this.input_stack_index);
+            last_base = input_stack.charAt(input_stack.length() - this.input_stack_index);
 
         } else {
-            last_base = input_stack_complement.get(input_stack_complement.size() - this.input_stack_index);
+            last_base = input_stack_complement.charAt(input_stack_complement.length() - this.input_stack_index);
 
         }
 
         this.input_stack_index += 1;
 
         if (!this.reverse_flag) {
-            if (this.out_stack.size() > 0) {
+            if (this.out_stack.length() > 0) {
 
-                if (this.out_stack.get(this.out_stack.size() - 1) != last_base) {
+                if (this.out_stack.charAt(this.out_stack.length() - 1) != last_base) {
 
-                    this.out_stack.add(last_base);
+                    this.out_stack += last_base;
                 } else {
                     this.unchanged_after_push_flag = true;
                 }
             } else {
-                this.out_stack.add(last_base);
+                this.out_stack += last_base;
             }
         } else {
-            if (this.out_stack.size() > 0 ) {
+            if (this.out_stack.length() > 0 ) {
 
-                if (this.out_stack.get(0) != last_base) {
-                    this.out_stack.add(0, last_base);
+                if (this.out_stack.charAt(0) != last_base) {
+                    this.out_stack = last_base + this.out_stack;
                 } else {
                     this.unchanged_after_push_flag = true;
                 }
             } else {
-                this.out_stack.add(0, last_base);
+                this.out_stack = last_base + this.out_stack;
             }
         }
 
@@ -184,9 +181,14 @@ public class State {
 
     public int check_action() {
 
-        Set<Character> stackset = new HashSet<>(this.out_stack);
+        String str = this.out_stack;
+        ArrayList<Character> chars = new ArrayList<Character>();
+        for (char c : str.toCharArray()) {
+            chars.add(c);
+        }
+        Set<Character> stackset = new HashSet<>(chars);
 
-        int stacksize = this.out_stack.size();
+        int stacksize = this.out_stack.length();
         int setsize = stackset.size();
 
         if ( stacksize == setsize ) { //duplicheck
@@ -214,7 +216,7 @@ public class State {
         return reverse_flag;
     }
 
-    public List<Character> getOut_stack() {
+    public String getOut_stack() {
         return out_stack;
     }
 

@@ -79,7 +79,7 @@ public class State {
         this.reverse_flag = !this.reverse_flag;
     }
 
-    
+
     public void push(){
 
         Character last_base;
@@ -88,16 +88,16 @@ public class State {
 
         } else {
             last_base = input_stack_complement.get(input_stack_complement.size() - this.input_stack_index);
-            
+
         }
 
         this.input_stack_index += 1;
 
         if (!this.reverse_flag) {
             if (this.out_stack.size() > 0) {
-                
+
                 if (this.out_stack.get(this.out_stack.size() - 1) != last_base) {
-                    
+
                     this.out_stack.add(last_base);
                 } else {
                     this.unchanged_after_push_flag = true;
@@ -107,7 +107,7 @@ public class State {
             }
         } else {
             if (this.out_stack.size() > 0 ) {
-                
+
                 if (this.out_stack.get(0) != last_base) {
                     this.out_stack.add(0, last_base);
                 } else {
@@ -120,7 +120,7 @@ public class State {
 
     }
 
-    
+
     public void take_action(Character action){
         if (action.equals('c')){
             this.complement();
@@ -181,7 +181,7 @@ public class State {
         return acc_states;
     }
 
-    
+
     public int check_action() {
 
         Set<Character> stackset = new HashSet<>(this.out_stack);

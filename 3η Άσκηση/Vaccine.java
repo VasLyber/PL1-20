@@ -78,9 +78,9 @@ public class Vaccine {
         State init_p = init.accessible_initial();
         List<State> akses = new ArrayList<State>();
 
-        //Deque<State> Q = new ArrayDeque<State>(); //https://www.geeksforgeeks.org/deque-interface-java-example/
-        
-        List<State> Q = new ArrayList<State>();
+        Deque<State> Q = new ArrayDeque<State>(); //https://www.geeksforgeeks.org/deque-interface-java-example/
+
+        //List<State> Q = new ArrayList<State>();
         Q.add(init_p);
 
 
@@ -89,13 +89,13 @@ public class Vaccine {
         boolean append_flag;
         State s;
         State t;
-        State o;
+        //State o;
 
         while (!(Q.isEmpty())) { //check null list
 
-            s = Q.remove(0); //163
-            List<State> internal_Q = new ArrayList<State>();
-            //Deque<State> internal_Q = new ArrayDeque<State>();
+            s = Q.removeFirst(); //163
+            //List<State> internal_Q = new ArrayList<State>();
+            Deque<State> internal_Q = new ArrayDeque<State>();
             if (secondary_flag) {
                 secondary_flag = !secondary_flag; //thanks
                 akses = s.accessible_secondary();
@@ -123,8 +123,8 @@ public class Vaccine {
                     } else if ( t.check_action() == 1) {
                         if (t.isUnchanged_after_push_flag()) {
                             append_flag = true;
-                            for (int b = 0; b < Q.size(); b++) {
-                                o = Q.get(b);
+                            //for (int b = 0; b < Q.size(); b++) {
+                            for (State o: Q){
                                 if ( (o.isReverse_flag() == t.isReverse_flag()) && (o.isComplement_flag() == t.isComplement_flag()) && (o.getInput_stack_index() == t.getInput_stack_index()) && (o.getOut_stack() == t.getOut_stack()) ) {
                                     append_flag = false;
                                     break;
@@ -139,7 +139,7 @@ public class Vaccine {
                         }
                     }
                 }
-                Q.addAll(internal_Q); 
+                Q.addAll(internal_Q);
             }
 
 
@@ -147,8 +147,7 @@ public class Vaccine {
 
         }
 
-        return new State("error");
-
+        State errorpog = new State("error");
+        return errorpog;
     }
-
-}
+}        
